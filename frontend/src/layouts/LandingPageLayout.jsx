@@ -3,11 +3,15 @@ import Navbar from "../components/Navbar"
 
 const LandingPageLayout = () => {
     return (
-        <div>
+        <div className="flex flex-col h-screen">
             {/* Nav Bar */}
-            <Navbar/>
+            <div className="flex-none">
+                <Navbar/>
+            </div>
             {/* Sections */}
-            <Outlet/>
+            <div className="flex-grow">
+                <Outlet/>
+            </div>
         </div>
     )
 }
