@@ -104,12 +104,12 @@ const SignupForm = () => {
 
     return (
         <div>
-            <div className="bg-[#032c480d] shadow-sm border rounded py-10 px-10">
+            <div>
                 <form autoComplete="off">
                     {/*--------First Name and Last Name---------*/}
-                    <div className="flex items-center justify-center gap-4 mb-4">
+                    <div className="md:flex items-center justify-center gap-4 mb-4">
                         {/*First Name*/}
-                        <div>
+                        <div className="mb-4 md:mb-0">
                             <label
                                 htmlFor="firstname"
                                 className="font-medium text-md text-blue-primary block mb-1"
@@ -123,7 +123,7 @@ const SignupForm = () => {
                                 placeholder="John"
                                 value={firstname}
                                 onChange={(e) => setFname(e.target.value)}
-                                className={`focus:${isValidFirstName?'outline-blue-trans2' : 'outline-red-300'} min-w-48 px-2 py-1 rounded`}
+                                className={`border border-blue-trans2 focus:${isValidFirstName?'outline-blue-trans2' : 'outline-red-300'} min-w-48 px-2 py-1 rounded`}
                             />
                         </div>
                         {/* Last Name */}
@@ -141,15 +141,15 @@ const SignupForm = () => {
                                 placeholder="Doe"
                                 value={lastname}
                                 onChange={(e) => setLname(e.target.value)}
-                                className={`focus:${isValidLastName?'outline-blue-trans2' : 'outline-red-300'}
+                                className={`border border-blue-trans2 focus:${isValidLastName?'outline-blue-trans2' : 'outline-red-300'}
                                     min-w-48 px-2 py-1 rounded ${!isValidLastName && 'border border-red-500'}`}
                             />
                         </div>
                     </div>
                     {/*---------Email and Gender------------*/}
-                    <div className="flex items-center justify-center gap-4 mb-4">
+                    <div className="md:flex items-center justify-center gap-4 mb-4">
                         {/* Email */}
-                        <div>
+                        <div className="mb-4 md:mb-0">
                             <label
                                 htmlFor="email"
                                 className="font-medium text-md text-blue-primary block mb-1"
@@ -163,7 +163,7 @@ const SignupForm = () => {
                                 placeholder="johndoe@abc.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className={`focus:${isValidEmail?'outline-red-300' : 'outline-blue-trans2'} min-w-48 px-2 py-1 rounded`}
+                                className={`border border-blue-trans2 focus:${isValidEmail?'outline-red-300' : 'outline-blue-trans2'} min-w-48 px-2 py-1 rounded`}
                             />
                         </div>
                         {/* Gender */}
@@ -176,7 +176,7 @@ const SignupForm = () => {
                             </label>
                             <select
                                 onChange={(e) => setGender(e.target.value)}
-                                className="focus:outline-blue-trans2 min-w-48 px-2 py-1 rounded"
+                                className="border border-blue-trans2 focus:outline-blue-trans2 min-w-48 px-2 py-1 rounded"
                             >
                                 <option value={"male"}>Male</option>
                                 <option value={"female"}>Female</option>
@@ -184,9 +184,9 @@ const SignupForm = () => {
                         </div>
                     </div>
                     {/*---------Password and Confirm Password------------*/}
-                    <div className="flex items-center justify-center gap-4">
+                    <div className="md:flex items-center justify-center gap-4">
                         {/* Password */}
-                        <div className="flex flex-col self-start">
+                        <div className="flex flex-col self-start mb-4 md:mb-0">
                             <label
                                 htmlFor="password"
                                 className="font-medium text-md text-blue-primary block mb-1"
@@ -200,7 +200,7 @@ const SignupForm = () => {
                                 placeholder="********"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className={`focus:${isValidPassword?'outline-red-300' : 'outline-blue-trans2'} min-w-48 px-2 py-1 rounded`}
+                                className={`border border-blue-trans2 focus:${isValidPassword?'outline-red-300' : 'outline-blue-trans2'} min-w-48 px-2 py-1 rounded`}
                             />
                             {isValidPassword && <div className="text-red-500">
                                 * must contain Uppercase<br/>
@@ -224,7 +224,7 @@ const SignupForm = () => {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className={
-                                    `focus:${passwordMatchError? 'outline-red-50' : 'outline-blue-trans2'}
+                                    `border border-blue-trans2 focus:${passwordMatchError? 'outline-red-50' : 'outline-blue-trans2'}
                                     min-w-48 px-2 py-1 rounded`}
                             />
                             {passwordMatchError && <div className="text-red-500">Password doesn't match</div>}

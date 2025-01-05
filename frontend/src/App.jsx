@@ -4,6 +4,7 @@ import LandingPageLayout from './layouts/LandingPageLayout'
 import LandingPage from './pages/LandingPage'
 import DashboardLayout from './layouts/DashboardLayout'
 import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
             <Route path="/" element={<LandingPageLayout/>}>
                 <Route index element={<LandingPage/>}/>
                 <Route path='login' element={<LoginPage/>}/>
+                <Route path='signup' element={<SignupPage/>}/>
             </Route>
             <Route path="/dashboard" element={<DashboardLayout/>}>
             </Route>
