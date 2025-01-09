@@ -5,12 +5,12 @@ const LandingPage = () => {
 
     return (
         <div>
-            <div className="h-screen bg-center bg-cover">
-                <div className="grid grid-cols-12">
-                    <div className="col-span-6">
+            <div className="h-screen bg-center bg-cover mt-[-50px] -z-10">
+                <div className="flex items-center justify-center w-full">
+                    <div className="w-1/2">
                         <img src={HeroImg}/>
                     </div>
-                    <div className="col-span-6">
+                    <div className="w-1/2">
                         <HeroText/>
                     </div>
                 </div>

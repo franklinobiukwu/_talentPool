@@ -6,7 +6,7 @@ const LandingPageLayout = () => {
         <div 
             className="flex flex-col h-screen">
             {/* Nav Bar */}
-            <div className="flex-none">
+            <div className="flex-none z-10">
                 <Navbar/>
             </div>
             {/* Sections */}
