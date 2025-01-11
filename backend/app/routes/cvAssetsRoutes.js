@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { createCvAsset, deleteCvAsset, fetchCvAssets, updateCvAsset } from "../controllers/cvAssetController.js";
+import {
+    createCvAsset,
+    deleteCvAsset,
+    fetchCvAssets,
+    searchCvAssets,
+    updateCvAsset } from "../controllers/cvAssetController.js";
 
 const router = Router()
 
@@ -11,5 +16,7 @@ router.get("/", fetchCvAssets)
 router.patch("/:cvAssetId", updateCvAsset)
 // Delete CV Block
 router.delete("/:cvAssetId", deleteCvAsset)
+// Search CV Assets
+router.get("/search", searchCvAssets)
 
 export default router

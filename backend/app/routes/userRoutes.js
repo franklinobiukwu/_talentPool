@@ -2,7 +2,7 @@ import { Router } from "express";
 import educationRoutes from "./educationRoutes.js"
 import profileRoutes from "./profileRoutes.js"
 import skillsRoutes from "./skillsRoutes.js"
-import cvAssetRoutes from "./cvAssetRoutes.js"
+import cvAssetsRoutes from "./cvAssetsRoutes.js"
 import requireAuth from "../middlewares/requireAuth.js";
 
 const router = Router()
@@ -17,9 +17,9 @@ router.use("/education", educationRoutes)
 router.use("/profile", profileRoutes)
 
 // Skills Routes
-router.use("/skill", skillsRoutes)
+router.use("/skills", skillsRoutes)
 
 // CvBlocks Routes
-router.use("/cvasset", cvAssetRoutes)
+router.use("/cvassets", cvAssetsRoutes)
 
 export default router
