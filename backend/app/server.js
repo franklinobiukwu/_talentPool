@@ -14,8 +14,7 @@ cloudinary.config({
 
 // Import Routers
 import userRouter from "./routes/userRoutes.js"
-import profileRouter from "./routes/profileRoutes.js"
-import educationRouter from "./routes/educationRoutes.js"
+import authenticationRouter from "./routes/authenticationRoutes.js"
 
 const app = express()
 const port = 3000
@@ -26,9 +25,8 @@ app.use(express.json())
 app.use(cors())
 
 // Routes
-app.use("/", userRouter)
-app.use("/user", profileRouter)
-app.use("/education", educationRouter)
+app.use("/", authenticationRouter)
+app.use("/user", userRouter)
 
 
 mongoose.connect(connectionString)

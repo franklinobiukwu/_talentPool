@@ -6,14 +6,10 @@ const skillSchema = new Schema({
         ref: "User",
         required: true
     },
-    skills: {
-        type: [String],
-        validate: function (skills) {
-            return new Set(skills).size === skills.length
-        },
-        message: "Skill must be unique."
+    skill: {
+        type: String,
+        required: true
     },
-    default: []
 })
 
 // Add an index for efficient querying by user_id

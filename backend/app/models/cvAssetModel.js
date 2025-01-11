@@ -1,10 +1,10 @@
 import { Schema, SchemaTypes, model } from "mongoose";
 import CvSection from "./cvSectionsModel.js";
 
-const validSections = ["education", "summary", "skills", "certifications"]
+const validSections = ["education", "summary", "skills", "certifications", "experience"]
 
-const cvBlockSchema = new Schema({
-    userId: {
+const cvAssetSchema = new Schema({
+    user_id: {
         type: SchemaTypes.ObjectId,
         ref: "Users",
         required: true
@@ -36,8 +36,8 @@ const cvBlockSchema = new Schema({
 }, {timestamps: true})
 
 // indexing
-cvBlockSchema.index({ userId: 1, section: 1 })
+cvAssetSchema.index({ user_id: 1, section: 1 })
 
-const CvBlock = model("CvBlock", cvBlockSchema)
+const CvAsset = model("CvAsset", cvAssetSchema)
 
-export default CvBlock
+export default CvAsset

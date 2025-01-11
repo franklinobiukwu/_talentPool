@@ -36,10 +36,10 @@ const fetchEducation = async (req, res) => {
 const updateEducation = async (req, res) => {
     const { _id: user_id } = req.user
     const educationDetails = req.body
-    const { education_id } = req.params
+    const { educationId } = req.params
 
     // Return error if education id is invalid
-    if (!mongoose.Types.ObjectId.isValid(education_id)) {
+    if (!mongoose.Types.ObjectId.isValid(educationId)) {
         return res.status(404).json({ error: "Education entry does not exist"})
     }
     // Return error if fields are empty
@@ -50,7 +50,7 @@ const updateEducation = async (req, res) => {
     try{
         // Update education where user_id and _id match
         const updatedEducation = await Education.findOneAndUpdate(
-            {_id: education_id, user_id},
+            {_id: educationId, user_id},
             {...educationDetails},
             {new: true}
         ).select("-createdAt -updatedAt -__v")
@@ -70,16 +70,16 @@ const updateEducation = async (req, res) => {
 // DELETE EDUCATION ENTRY
 const deleteEducation = async (req, res) => {
     const { _id: user_id } = req.user
-    const { education_id } = req.params
+    const { educationId } = req.params
 
     // Return error if education id is invalid
-    if (!mongoose.Types.ObjectId.isValid(education_id)) {
+    if (!mongoose.Types.ObjectId.isValid(educationId)) {
         return res.status(404).json({ error: "Education entry does not exist"})
     }
 
     try{
         const deletedEducation = await Education.findOneAndDelete(
-            {_id: education_id, user_id},
+            {_id: educationId, user_id},
         )
 
         // If no document was found
@@ -90,7 +90,7 @@ const deleteEducation = async (req, res) => {
         res.status(200).json({ message: "Education entry successfully deleted", deletedEducation})
     }catch(error){
         console.error(error)
-        res.status(400).json({ json: `Error deleting education ${error.message}`})
+        res.status(500).json({ json: `Error deleting education ${error.message}`})
     }
 }
 
