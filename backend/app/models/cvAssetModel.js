@@ -35,6 +35,22 @@ const cvAssetSchema = new Schema({
     }
 }, {timestamps: true})
 
+// Pre-save middleware to normalize section
+cvAssetSchema.pre("save", function(next) {
+    if (this.section) {
+        this.section = this.section.toLowerCase()
+    }
+    next()
+})
+
+// Pre-update middleware to normalize section during updates
+cvAssetSchema.pre("findOneAndUpdate", function(next) {
+    if (this._update.section) {
+        this._update.section = this._update.section.toLowerCase()
+    }
+    next()
+})
+
 // indexing
 cvAssetSchema.index({ user_id: 1, section: 1 })
 

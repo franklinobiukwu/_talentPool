@@ -1,15 +1,15 @@
 import { Router } from "express";
-import { createCvAsset } from "../controllers/cvAssetController.js";
+import { createCvAsset, deleteCvAsset, fetchCvAssets, updateCvAsset } from "../controllers/cvAssetController.js";
 
 const router = Router()
 
 // Create CV Block
 router.post("/", createCvAsset)
 // Fetch CV Block
-router.get("/", )
+router.get("/", fetchCvAssets)
 // Update CV Block
-router.patch("/:cvAssetId",)
+router.patch("/:cvAssetId", updateCvAsset)
 // Delete CV Block
-router.delete("/:cvAssetId",)
+router.delete("/:cvAssetId", deleteCvAsset)
 
 export default router
