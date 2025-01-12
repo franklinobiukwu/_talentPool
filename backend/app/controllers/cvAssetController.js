@@ -100,4 +100,31 @@ const deleteCvAsset = async (req, res) => {
     }
 }
 
-export {createCvAsset, fetchCvAssets, updateCvAsset, deleteCvAsset }
+// SEARCH CV ASSETS
+const searchCvAssets = async (req, res) => {
+    const { _id: user_id } = req.user
+    const { query } = req.query
+
+    try{
+        // Build the search query
+        const searchQuery = { user_id }
+        if (query) {
+            // Match the query against content, section, or tags fields (case-insensitive)
+            searchQuery.$or = [
+                { content: new RegExp(query,"i") }, // Matches query in content
+                { section: new RegExp(query, "i") }, // Matches query in section
+                { tags: {$regex: query, $options: "i"} } // Matches query in tags
+            ]
+        }
+
+        // Perform the search
+        const results = await CvAsset.find(searchQuery).select("-__v -createdAt -updatedAt")
+
+        return res.status(200).json(results)
+    }catch(error){
+        console.error("Error searching CV assets", error)
+        return res.status(500).json({ error: `Couldn't search CV assets: ${ error.message }` })
+    }
+}
+
+export {createCvAsset, fetchCvAssets, updateCvAsset, deleteCvAsset, searchCvAssets }
