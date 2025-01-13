@@ -2,10 +2,17 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router"
 import SubmitButton from "./SubmitButton"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 
+const apiUrl = import.meta.env.VITE_API_URL
+
+const loginFn = async(data) => {
+    const result = await axios.post(`${apiUrl}/login`, data)
+    return result.data
+}
 
 const LoginForm = () => {
     const [email, setEmail] = useState('')
@@ -13,8 +20,6 @@ const LoginForm = () => {
 
     // Error States
     const [validEmail, setValidEmail] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-    const [loginError, setLoginError] = useState('')
 
     // Navigation
     const navigate = useNavigate()
@@ -24,30 +29,26 @@ const LoginForm = () => {
        setValidEmail(EMAIL_REGEX.test(email)) 
     }, [email])
 
+    // Query Client Hook
+    const queryClient = useQueryClient()
+
+    const {mutate, isPending, isError, error } = useMutation({
+        mutationFn: loginFn,
+        onSuccess: (data) => {
+            localStorage.setItem("user", JSON.stringify(data))
+            // Cache Data Response
+            queryClient.setQueryData(["user"], data)
+            navigate("/dashboard")
+        }
+    })
 
     // Login Handler
-    const handleLogin = async () => {
-        setIsLoading(true)
-        setLoginError('')
-        // Backend API Endpoint
-        const endpoint = useEndpoint()
+    const handleLogin = () => {
         const data = {
             email: email,
             password: password
         }
-        try{
-            const result = await axios.post(`${endpoint}/user/login`, data)
-            // Set user in global state
-            console.log(result.data)
-            // Navigate to dashboard on successful login
-            navigate('/dashboard')        
-        }catch(error){
-           setLoginError(error.response.data) 
-            console.log(error.response.data)
-        }finally{
-            setIsLoading(false)
-        }
-        
+        mutate(data)
     }
 
     return (
@@ -98,13 +99,13 @@ const LoginForm = () => {
                         />
                     </div>
                     {/* Display Error */}
-                    {loginError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded">{loginError.error}</div>}
+                    {isError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded">{error}</div>}
                     {/* Button */}
                     <div className="flex items-center justify-center mt-8">
                         <SubmitButton
                             text="Log in" 
                             style="solid"
-                            isLoading={isLoading}
+                            isLoading={isPending}
                             onClick={() => handleLogin()}                            
                         />
                     </div>
