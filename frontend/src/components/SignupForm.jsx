@@ -2,6 +2,15 @@ import { useEffect, useState } from "react"
 import SubmitButton from "./SubmitButton.jsx";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+const signupFn = async (data) => {
+    const response = await axios.post(`${apiUrl}/signup`, data)
+    return response.data
+}
 
 const SignupForm = () => {
     const [firstname, setFname] = useState('')
@@ -19,11 +28,6 @@ const SignupForm = () => {
     const [isValidLastName, setIsValidLastName] = useState(true)
     const [isValidEmail, setIsValidEmail] = useState(false)
     const [isValidPassword, setIsValidPassword] = useState(false)
-
-    console.log(`isValidLastName ${isValidLastName}`)
-    // Loading State
-    const [isLoading, setIsLoading] = useState(false)
-
 
     const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{1,23}$/;
     const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -44,7 +48,6 @@ const SignupForm = () => {
         if (lastname){
             setIsValidLastName(USER_REGEX.test(lastname))
         } else {
-            console.log("Setting to false")
             setIsValidLastName(false)
         }
     }, [lastname])
@@ -52,7 +55,7 @@ const SignupForm = () => {
     // Validate Email
     useEffect(() => {
         if (email){
-            setIsValidEmail(!EMAIL_REGEX.test(email))
+            setIsValidEmail(EMAIL_REGEX.test(email))
         } else {
             setIsValidEmail(false)
         }
@@ -60,7 +63,7 @@ const SignupForm = () => {
     // Validate Password Strength
     useEffect(() => {
         if (password){
-            setIsValidPassword(!PWD_REGEX.test(password))
+            setIsValidPassword(PWD_REGEX.test(password))
         } else {
             setIsValidPassword(false)
         }
@@ -86,20 +89,29 @@ const SignupForm = () => {
         }
     },[password, confirmPassword])
 
-    // Form Submit Handler
-    const handleSignup = async () => {
-        const data = {firstname, lastname, email, gender, password, confirmPassword}
-        try{
-            console.log(data)
-            const response = await axios.post(`${endpoint}/user/signup`, data)
-            console.log(response)
-            navigate('/dashboard')
-        }catch(error){
-            console.error(error.response.data)
-        }finally{
-            setIsLoading(false)
+    // Query Client
+    const queryClient = useQueryClient()
+
+    // mutate function
+    const {mutate, isPending, isError, error} = useMutation({
+        mutationFn: signupFn,
+        onSuccess: (data) => {
+            localStorage.setItem("user", JSON.stringify(data))
+            // Cache Data Response
+            queryClient.setQueryData(["user"], data)
+            navigate("/dashboard")
         }
-        console.log(isValidEmail, passwordMatchError, isValidPassword)
+    })
+    // Form Submit Handler
+    const handleSignup = () => {
+        const data = {
+            firstName: firstname, 
+            lastName:lastname, 
+            email, 
+            gender, 
+            password, 
+            confirmPassword}
+        mutate(data)
     }
 
     return (
@@ -141,8 +153,7 @@ const SignupForm = () => {
                                 placeholder="Doe"
                                 value={lastname}
                                 onChange={(e) => setLname(e.target.value)}
-                                className={`border border-blue-trans2 focus:${isValidLastName?'outline-blue-trans2' : 'outline-red-300'}
-                                    min-w-48 px-2 py-1 rounded ${!isValidLastName && 'border border-red-500'}`}
+                                className={`border border-blue-trans2 focus:${isValidLastName?'outline-blue-trans2' : 'outline-red-300'} min-w-48 px-2 py-1 rounded`}
                             />
                         </div>
                     </div>
@@ -163,7 +174,11 @@ const SignupForm = () => {
                                 placeholder="johndoe@abc.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className={`border border-blue-trans2 focus:${isValidEmail?'outline-red-300' : 'outline-blue-trans2'} min-w-48 px-2 py-1 rounded`}
+                                className={
+                                    `border border-blue-trans2 
+                                    focus:${isValidEmail?
+                                            'outline-blue-trans2' : 'outline-red-300'} 
+                                    min-w-48 px-2 py-1 rounded`}
                             />
                         </div>
                         {/* Gender */}
@@ -200,12 +215,13 @@ const SignupForm = () => {
                                 placeholder="********"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className={`border border-blue-trans2 focus:${isValidPassword?'outline-red-300' : 'outline-blue-trans2'} min-w-48 px-2 py-1 rounded`}
+                                className={`border border-blue-trans2 focus:${isValidPassword?'outline-blue-trans2' : 'outline-red-300'} min-w-48 px-2 py-1 rounded`}
                             />
-                            {isValidPassword && <div className="text-red-500">
-                                * must contain Uppercase<br/>
+                            {(!isValidPassword && password) && <div className="text-red-500 text-sm">
+                                * must contain uppercase<br/>
                                 * must contain lowercase<br/>
                                 * must contain number<br/>
+                                * must contain special character<br/>
                                 * must be atleast 8 digits long</div>}
                         </div>
                         {/* Confirm Password */}
@@ -227,17 +243,20 @@ const SignupForm = () => {
                                     `border border-blue-trans2 focus:${passwordMatchError? 'outline-red-50' : 'outline-blue-trans2'}
                                     min-w-48 px-2 py-1 rounded`}
                             />
-                            {passwordMatchError && <div className="text-red-500">Password doesn't match</div>}
+                            {passwordMatchError && <div className="text-red-500 text-sm">Password doesn't match</div>}
                         </div>
                     </div>
+                    {/* Display Signup Error */}
+                    {isError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded text-red-400">{error.response.data.error}</div>}
+
                     {/*-----------Button-------------*/}
                     <div className="flex justify-center items-center mt-10">
                         <SubmitButton
                             style="default"
                             text="Signup" 
                             onClick={handleSignup}
-                            disabled={isValidPassword || isValidEmail || passwordMatchError || !firstname || !lastname || !email || !gender || !password || !confirmPassword}
-                            isLoading={isLoading}
+                            disabled={!isValidPassword || !isValidEmail || passwordMatchError || !firstname || !lastname || !email || !gender || !password || !confirmPassword}
+                            isLoading={isPending}
                         />
                     </div>
                 </form>
