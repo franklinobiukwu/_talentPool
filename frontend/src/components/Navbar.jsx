@@ -2,6 +2,7 @@ import { Link } from "react-router"
 import AuthBtn from "./AuthBtns"
 import Logo from "../assets/logo.png"
 import { HiOutlinePresentationChartBar } from "react-icons/hi";
+import { IoLogInOutline, IoLogOutOutline } from "react-icons/io5";
 
 const Navbar = (props) => {
     const handleLogout = () => {
@@ -27,10 +28,19 @@ const Navbar = (props) => {
                 {!props.user ? ( 
                     <div className="flex items-center">
                         <div className="mr-4">
-                           <AuthBtn text="Login" style="light" path="/login"/>
+                           <AuthBtn 
+                                text="Login"
+                                style="light"
+                                path="/login"
+                                icon={<IoLogInOutline/>}
+                            />
                         </div>
                         <div>
-                            <AuthBtn text="Sign up" style="dark" path="/signup"/>
+                            <AuthBtn
+                                text="Sign up"
+                                style="dark"
+                                path="/signup"
+                            />
                         </div>
                     </div>) 
                             : 
@@ -44,7 +54,12 @@ const Navbar = (props) => {
                             />
                         </div>
                         <div>
-                            <AuthBtn text="Logout" style="dark" onClick={handleLogout}/>
+                            <AuthBtn 
+                                text="Logout"
+                                style="dark"
+                                onClick={handleLogout}
+                                icon={<IoLogOutOutline/>}
+                            />
                         </div>
                     </div>)
                 }

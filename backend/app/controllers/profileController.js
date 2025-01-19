@@ -8,7 +8,7 @@ const fetchAbout = async (req, res) => {
     const { _id } = req.user
 
     try{
-        const about = await User.findById({_id}).select("about")
+        const about = await User.findById({_id}).select("about -_id")
 
         return res.status(200).json(about)
     }catch(error){
@@ -29,7 +29,7 @@ const updateAbout = async (req, res) => {
     try{
         const updatedAbout = await User.findByIdAndUpdate(
             {_id}, { about }, {new: true}
-        ).select("about")
+        ).select("about -_id")
         
         return res.status(200).json(updatedAbout)
 

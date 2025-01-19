@@ -247,7 +247,7 @@ const SignupForm = () => {
                         </div>
                     </div>
                     {/* Display Signup Error */}
-                    {isError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded text-red-400">{error.response.data.error}</div>}
+                    {isError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded text-red-400">{error?.response?.data?.error}</div>}
 
                     {/*-----------Button-------------*/}
                     <div className="flex justify-center items-center mt-10">

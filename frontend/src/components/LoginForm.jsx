@@ -99,7 +99,7 @@ const LoginForm = () => {
                         />
                     </div>
                     {/* Display Error */}
-                    {isError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded text-red-400">{error.response.data.error}</div>}
+                    {isError&&<div className="mt-2 px-2 bg-red-50 border border-red-100 rounded text-red-400">{error?.response?.data?.error}</div>}
                     {/* Button */}
                     <div className="flex items-center justify-center mt-8">
                         <SubmitButton
