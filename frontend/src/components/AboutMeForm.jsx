@@ -38,6 +38,7 @@ const AboutMeForm = () => {
     const [aboutMe, setAboutMe] = useState("")
     const [prevAboutMe, setPrevAboutMe] = useState("")
     const [hasChanged, setHasChanged] = useState(false)
+    const [isLoaded, setIsLoaded] = useState(false)
 
     // Fetch About Me
     const {data, isPending, isError, error, isSuccess} = useQuery({
@@ -48,8 +49,9 @@ const AboutMeForm = () => {
 
     // Set About Me to fetched data initially
     useEffect(()  => {
-        if (isSuccess && !aboutMe && data?.about) {
+        if (isSuccess && !isLoaded && data?.about) {
             setAboutMe(data.about)
+            setIsLoaded(true)
         }
     }, [isSuccess, data, aboutMe])
 
