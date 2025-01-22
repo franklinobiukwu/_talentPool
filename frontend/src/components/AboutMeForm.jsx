@@ -3,12 +3,12 @@ import Button from "./Button"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { getToken } from "../hooks/utilityFns"
+import { getApiUrl, getToken } from "../hooks/utilityFns"
 import { ThreeDots } from "react-loader-spinner"
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = getApiUrl()
 const token = getToken()
 
 
