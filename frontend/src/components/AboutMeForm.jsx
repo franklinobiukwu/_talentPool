@@ -40,6 +40,10 @@ const AboutMeForm = () => {
     const [hasChanged, setHasChanged] = useState(false)
     const [isLoaded, setIsLoaded] = useState(false)
 
+    // Error States
+    const [loadError, setLoadError] = useState('')
+    const [updateError, setUpdateError] = useState('')
+
     // Fetch About Me
     const {data, isPending, isError, error, isSuccess} = useQuery({
         queryKey: ['aboutme'],
@@ -65,7 +69,6 @@ const AboutMeForm = () => {
         mutate, 
         isPending:isUpdatePending, 
         isError:isUpdateIsError, 
-        isSuccess:isUpdateSuccess, 
         error:isUpdateError } = useMutation({
         mutationFn: updateAbout,
         onSuccess: (updatedAbout) => {
@@ -84,6 +87,18 @@ const AboutMeForm = () => {
         setPrevAboutMe(aboutMe)
         setIsEdit(true)
     }
+
+    useEffect(() => {
+        if (isError){
+            setLoadError(`Error: ${error.response.data.error}`)
+        }
+    }, [isError])
+
+    useEffect(() => {
+        if (isUpdateIsError){
+            setUpdateError(`Error: ${isUpdateError?.response?.data?.error}`)
+        }
+    }, [isUpdateError])
 
     return (
         <div>
@@ -132,8 +147,8 @@ const AboutMeForm = () => {
                                 )
                     }
                     {/* Display Errors */}
-                    {isError && <p className="text-red-500">Error loading data: {error.message}</p>}
-                    {isUpdateIsError && <p className="text-red-500">Error updating data: {isUpdateError.message}</p>}
+                    {isError && <p className="text-red-400">{loadError}</p>}
+                    {isUpdateIsError && <p className="text-red-400">{updateError}</p>}
 
                     <div className="flex justify-center items-center my-5">
                         { isEdit ? (
@@ -155,6 +170,7 @@ const AboutMeForm = () => {
                                     style="light"
                                     onClick={() => {
                                         setAboutMe(prevAboutMe)
+                                        setUpdateError('')
                                         setIsEdit(false)}
                                     }
                                     disabled={isUpdatePending}

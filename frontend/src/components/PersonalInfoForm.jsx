@@ -3,10 +3,10 @@ import { Country, State, City } from "country-state-city";
 import FormSelector from "./FormSelector.jsx";
 import Button from "./Button.jsx";
 import { FaEdit } from "react-icons/fa"
-import { FaSave } from "react-icons/fa"
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { getApiUrl, getToken } from "../hooks/utilityFns.jsx";
+import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
 const apiUrl = getApiUrl()
@@ -22,12 +22,22 @@ const fetchPersonalProfile = async() => {
     return response.data
 }
 
+// Update Personal Profile
+const updatePersonalProfile = async (data) => {
+    const response = await axios.patch(`${apiUrl}/user/profile`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return response.data
+}
+
 // Function to capitalize words
 const capitalizeWords = (str) => str.split(' ').map(word => `${word.charAt(0).toUpperCase()}${word.slice(1)}`).join(' ');
 
-const PersonalInfoForm = () => {
-    const [fname, setFname] = useState("");
-    const [lname, setLname] = useState("");
+const PersonalInfoForm = (props) => {
+    const [firstName, setFname] = useState("");
+    const [lastName, setLname] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [gender, setGender] = useState("");
@@ -35,6 +45,17 @@ const PersonalInfoForm = () => {
     const [state, setState] = useState("");
     const [city, setCity] = useState("");
 
+    // Error States
+    const [loadError, setLoadError] = useState('')
+    const [updateError, setUpdateError] = useState('')
+
+    // State to track for change
+    const [hasChanged, setHasChanged] = useState(false)
+
+    // State to store previous form data
+    const [previousProfileData, setPreviousProfileData] = useState()
+
+    // State to track form edit mode
     const [isEdit, setIsEdit] = useState(false)
 
 
@@ -43,6 +64,8 @@ const PersonalInfoForm = () => {
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
 
+    // Form Data
+    const formData = {firstName, lastName, email, phone, gender, country, state, city}
 
     // Effect to set States of selected country when country changes
     useEffect(() => {
@@ -71,27 +94,13 @@ const PersonalInfoForm = () => {
     }, [state, country])
 
 
-    console.log("All", country, state, city)
-
-    // Handle Save
-    const handleSave = () => {
-        setIsEdit(false)
-    }
-
-    // Handle Edit
-    const handleEdit = () => {
-        setIsEdit(true)
-    }
-
-
     // Fetch User Profile
     const { data, isPending, isError, error, isSuccess } = useQuery({
         queryKey: ["personal information"],
         queryFn: fetchPersonalProfile
     })
 
-    console.log({isSuccess, isPending, data})
-
+    // Set Form Field State with value from fetch operation
     useEffect(() => {
         if (isSuccess && !isPending && data){
             if (data.firstName) setFname(capitalizeWords(data.firstName))
@@ -105,7 +114,50 @@ const PersonalInfoForm = () => {
         }
     }, [isSuccess, isPending, data])
 
-    console.log({fname, lname, email, phone, gender, city, country, state})
+    // Function to update profile data
+    const {mutate,
+            isPending: isUpdatePending,
+            isError: isUpdateIsError,
+            error: isUpdateError} = useMutation({
+        mutationFn: updatePersonalProfile,
+        onSuccess: (returnedData) => {
+            console.log({returnedData})
+            if (firstName) props.setFirstName(firstName)
+            if (lastName) props.setLastName(lastName)
+            if (email) props.setEmail(email)
+            setIsEdit(false)
+        }
+    })
+
+    // Handle Edit
+    const handleEdit = () => {
+        // Store all previous form field values
+        setPreviousProfileData(formData)
+        setIsEdit(true)
+    }
+    // Bool to track if form data changed
+    useEffect(() => {
+        setHasChanged(JSON.stringify(previousProfileData) !== JSON.stringify(formData))
+        
+    }, [previousProfileData, formData])
+
+    // Handle Save
+    const handleSave = () => {
+        mutate(formData)
+    }
+
+    // Set Error States
+    useEffect(() => {
+        if (isError){
+            setLoadError(`Error: ${error?.response?.data?.error}`)
+        }
+    }, [isError])
+
+    useEffect(() => {
+        if (isUpdateIsError){
+            setUpdateError(`Error ${isUpdateError?.response?.data?.error}`)
+        }
+    }, [isUpdateIsError])
 
     return (
         <div>
@@ -122,11 +174,11 @@ const PersonalInfoForm = () => {
                                 First name
                             </label>
                             <input
-                                id="fname"
-                                name="fname"
+                                id="firstName"
+                                name="firstName"
                                 type="text"
                                 placeholder="John"
-                                value={fname}
+                                value={firstName}
                                 onChange={(e) => setFname(e.target.value)}
                                 className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
                                 disabled={!isEdit}
@@ -139,12 +191,12 @@ const PersonalInfoForm = () => {
                                 Last name
                             </label>
                             <input
-                                id="lname"
-                                name="lname"
+                                id="lastName"
+                                name="lastName"
                                 type="text"
                                 placeholder="Doe"
                                 //className="rounded border px-2 py-0.5 w-52 text-blue-primary"
-                                value={lname}
+                                value={lastName}
                                 onChange={(e) => setLname(e.target.value)}
                                 className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
                                 disabled={!isEdit}
@@ -240,7 +292,7 @@ const PersonalInfoForm = () => {
                     </div>
 
                     {/*------------State and City-----------*/}
-                    <div className="flex justify-between items-center mb-12">
+                    <div className="flex justify-between items-center mb-10">
                         {/* State Selector */}
                         <div className="mr-5 col-span-6">
                             <FormSelector
@@ -276,15 +328,45 @@ const PersonalInfoForm = () => {
                             />
                         </div>
                     </div>
+                    {/* Display Errors */}
+                    {isError && <p className="text-red-400 mb-2">{loadError}</p>}
+                    {isUpdateIsError && <p className="text-red-400 mb-2">{updateError}</p>}
+
                     {/*-----------Submit----------------*/}
                     <div className="flex items-center justify-center">
                         { isEdit ? (
-                            <Button
-                                text="Save" 
-                                icon={<FaSave/>} 
-                                style="dark"
-                                onClick={handleSave}
-                            />
+                            <div className="flex">
+                                <div className="mr-2">
+                                    <Button
+                                        text="Save" 
+                                        icon={<IoSave/>} 
+                                        style="dark"
+                                        onClick={handleSave}
+                                        disabled={isUpdatePending || !hasChanged}
+                                        isLoading={isUpdatePending}
+                                    />
+                                </div>
+                                <Button
+                                    text="Cancel"
+                                    icon={<IoCloseCircleOutline/>}
+                                    style="light"
+                                    onClick={() => {
+                                        if(previousProfileData){
+                                            setFname(previousProfileData.firstName || "");
+                                            setLname(previousProfileData.lastName || "");
+                                            setEmail(previousProfileData.email || "");
+                                            setPhone(previousProfileData.phone || "");
+                                            setGender(previousProfileData.gender || "");
+                                            setCountry(previousProfileData.country || "");
+                                            setState(previousProfileData.state || "");
+                                            setCity(previousProfileData.city || "");
+                                        }
+
+                                        setUpdateError('')
+                                        setIsEdit(false)
+                                    }}
+                                />
+                            </div>
                         ) : (
                             <Button 
                                 text="Edit" 

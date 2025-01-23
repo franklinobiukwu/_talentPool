@@ -55,9 +55,15 @@ const fetchProfile = async (req, res) => {
 // Update Profile
 const updateProfile = async (req, res) => {
     const profile = req.body
+
     // return if profile is empty
     if (!profile) {
-        return res.status(400).json("Profile cannot blank")
+        return res.status(400).json({error: "Profile cannot blank"})
+    }
+
+    // return if required fields are blank
+    if (!profile.firstName || !profile.lastName || !profile.email || !profile.gender || !profile.country || !profile.state || !profile.city){
+        return res.status(400).json({error: "Please fill all required fields"})
     }
     const { _id } = req.user
 
@@ -77,6 +83,7 @@ const uploadPicture = async (req, res) => {
     try{
         const { _id } = req.user
         const file = req.file
+        console.log({file})
 
         if (!file) {
             return res.status(400).json({error: "No file uploaded"})

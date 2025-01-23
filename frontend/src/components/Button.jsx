@@ -1,5 +1,4 @@
 import { ThreeDots } from "react-loader-spinner";
-import { Link } from "react-router";
 
 const Button = (props) => {
     const light = `px-4 py-1.5 border border-blue-primary 
