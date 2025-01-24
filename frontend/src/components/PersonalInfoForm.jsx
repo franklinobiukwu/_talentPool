@@ -39,7 +39,7 @@ const PersonalInfoForm = (props) => {
     const [firstName, setFname] = useState("");
     const [lastName, setLname] = useState("");
     const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [gender, setGender] = useState("");
     const [country, setCountry] = useState("");
     const [state, setState] = useState("");
@@ -65,7 +65,7 @@ const PersonalInfoForm = (props) => {
     const [cities, setCities] = useState([]);
 
     // Form Data
-    const formData = {firstName, lastName, email, phone, gender, country, state, city}
+    const formData = {firstName, lastName, email, phoneNumber, gender, country, state, city}
 
     // Effect to set States of selected country when country changes
     useEffect(() => {
@@ -106,7 +106,7 @@ const PersonalInfoForm = (props) => {
             if (data.firstName) setFname(capitalizeWords(data.firstName))
             if (data.lastName) setLname(capitalizeWords(data.lastName))
             if (data.email) setEmail(data.email.toLowerCase())
-            if (data.phone) setPhone(data.phone)
+            if (data.phoneNumber) setPhoneNumber(data.phoneNumber)
             if (data.gender) setGender(capitalizeWords(data.gender))
             if (data.city) setCity(capitalizeWords(data.city))
             if (data.country) setCountry(capitalizeWords(data.country))
@@ -229,13 +229,13 @@ const PersonalInfoForm = (props) => {
                                 Phone number
                             </label>
                             <input
-                                id="phone"
-                                name="phone"
+                                id="phoneNumber"
+                                name="phoneNumber"
                                 type="tel"
                                 placeholder="+2348 056 681 680"
                                 //className="rounded border px-2 py-0.5 w-52 text-blue-primary"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                                 className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
                                 disabled={!isEdit}
                             />
@@ -355,7 +355,7 @@ const PersonalInfoForm = (props) => {
                                             setFname(previousProfileData.firstName || "");
                                             setLname(previousProfileData.lastName || "");
                                             setEmail(previousProfileData.email || "");
-                                            setPhone(previousProfileData.phone || "");
+                                            setPhoneNumber(previousProfileData.phoneNumber || "");
                                             setGender(previousProfileData.gender || "");
                                             setCountry(previousProfileData.country || "");
                                             setState(previousProfileData.state || "");
