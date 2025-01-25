@@ -8,6 +8,10 @@ import SignupPage from './pages/SignupPage'
 import RequireAuth from "./hooks/RequireAuth"
 import PreventDisplayAuth from "./hooks/PreventDisplayAuth"
 import ProfilePage from './pages/ProfilePage'
+import AssetsPage from './pages/AssetsPage'
+import FeedsPage from './pages/FeedsPage'
+import CvsPage from './pages/CvsPage'
+import SettingsPage from './pages/SettingsPage'
 
 function App() {
 
@@ -25,7 +29,11 @@ function App() {
             {/* Protected Routes */}
             <Route element={<RequireAuth />}>
                 <Route path="dashboard" element={<DashboardLayout/>}>
+                    <Route index element={<FeedsPage/>}/>
+                    <Route path='cvs' element={<CvsPage/>}/>
+                    <Route path='assets' element={<AssetsPage/>}/>
                     <Route path='profile' element={<ProfilePage/>}/>
+                    <Route path='settings' element={<SettingsPage/>}/>
                 </Route>
             </Route>
         </Routes>

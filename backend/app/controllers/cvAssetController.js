@@ -15,7 +15,7 @@ const createCvAsset = async (req, res) => {
         return res.status(201).json(newCvAsset)
     }catch(error){
         console.error(error)
-        return res.status(400).json({ error: `Couldn't create cv asset: ${error.message}` })
+        return res.status(400).json({ error: `Couldn't create CV asset: ${error.message}` })
     }
 }
 
@@ -59,7 +59,7 @@ const updateCvAsset = async(req, res) => {
 
         // Handle case where CV asset is not found
         if (!updatedCvAsset) {
-            return res.status(404).json({ error: "Cv asset not found"})
+            return res.status(404).json({ error: "CV asset not found"})
         }
 
         // Return with the updated CV asset

@@ -7,7 +7,11 @@ const ListCardHeading = (props) => {
                 <h2
                     className="text-blue-primary font-roboto font-bold"
                 >{props.title}</h2>
-                <FaPlus className="text-blue-primary"/>
+                <button
+                    onClick={() => props.setFormIsOpen && props.setFormIsOpen(true)}
+                >
+                    <FaPlus className="text-blue-primary"/>
+                </button>
             </div>
         </div>
     )
