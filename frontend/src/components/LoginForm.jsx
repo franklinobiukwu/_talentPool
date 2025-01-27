@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { useNavigate } from "react-router"
 import SubmitButton from "./SubmitButton"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../hooks/utilityFns.jsx";
 
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 
-const apiUrl = import.meta.env.VITE_API_URL
 
 const loginFn = async(data) => {
-    const result = await axios.post(`${apiUrl}/login`, data)
+    const result = await api.post(`/login`, data)
     return result.data
 }
 

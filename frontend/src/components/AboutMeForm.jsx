@@ -1,20 +1,18 @@
 import { FaEdit } from "react-icons/fa"
 import Button from "./Button"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { getApiUrl, getToken } from "../hooks/utilityFns"
+import { api, getToken } from "../hooks/utilityFns"
 import { ThreeDots } from "react-loader-spinner"
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const apiUrl = getApiUrl()
 const token = getToken()
 
 
 // Function that Fetches About Me
 const fetchAbout = async () => {
-    const response = await axios.get(`${apiUrl}/user/profile/about`, {
+    const response = await api.get(`/user/profile/about`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -24,7 +22,7 @@ const fetchAbout = async () => {
 
 // Function That Mutatates About Me
 const updateAbout = async (data) => {
-    const response = await axios.patch(`${apiUrl}/user/profile/about`, {about: data}, {
+    const response = await api.patch(`/user/profile/about`, {about: data}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -90,7 +88,7 @@ const AboutMeForm = () => {
 
     useEffect(() => {
         if (isError){
-            setLoadError(`Error: ${error.response.data.error}`)
+            setLoadError(`Error: ${error?.response?.data?.error}`)
         }
     }, [isError])
 

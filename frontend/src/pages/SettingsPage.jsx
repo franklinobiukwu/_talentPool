@@ -1,6 +1,6 @@
 import { IoClose } from "react-icons/io5"
-import ListCardHeading from "../components/ListCardHeading"
 import SectionForm from "../components/SectionForm"
+import ListSections from "../components/ListSections"
 import { useState } from "react"
 
 const SettingsPage = () => {
@@ -11,8 +11,7 @@ const SettingsPage = () => {
         <div className="md:grid grid-cols-12 relative h-screen">
             {/* Sections List */}
             <div className="md:col-span-6">
-                <ListCardHeading
-                    title="Sections"
+                <ListSections
                     setFormIsOpen={setFormIsOpen}
                 />
             </div>

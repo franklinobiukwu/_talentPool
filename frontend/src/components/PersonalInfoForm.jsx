@@ -4,17 +4,15 @@ import FormSelector from "./FormSelector.jsx";
 import Button from "./Button.jsx";
 import { FaEdit } from "react-icons/fa"
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { getApiUrl, getToken } from "../hooks/utilityFns.jsx";
+import { api, getToken } from "../hooks/utilityFns.jsx";
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const apiUrl = getApiUrl()
 const token = getToken()
 
 // Fetch Personal Profile
 const fetchPersonalProfile = async() => {
-    const response = await axios.get(`${apiUrl}/user/profile`, {
+    const response = await api.get(`/user/profile`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -24,7 +22,7 @@ const fetchPersonalProfile = async() => {
 
 // Update Personal Profile
 const updatePersonalProfile = async (data) => {
-    const response = await axios.patch(`${apiUrl}/user/profile`, data, {
+    const response = await api.patch(`/user/profile`, data, {
         headers: {
             Authorization: `Bearer ${token}`
         }

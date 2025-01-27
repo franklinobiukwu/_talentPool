@@ -3,13 +3,14 @@ import { ThreeDots } from "react-loader-spinner";
 const Button = (props) => {
     const light = `px-4 py-1.5 border border-blue-primary 
                             rounded text-blue-primary font-bold
-                            font-inter flex items-center text-sm`;
+                            font-inter flex items-center text-sm ${props?.mr}`;
 
     const dark = `px-4 py-1.5 bg-blue-primary text-white-primary
                         rounded border border-blue-primary font-bold
                         font-inter flex items-center text-sm ${
-                            (props.disabled || props.isLoading) && 'bg-blue-trans border-none'}`;
-    const text = `flex text-blue-primary font-bold font-inter text-sm items-center`
+                            (props.disabled || props.isLoading) && 'bg-blue-trans border-none'} ${props?.mr}`;
+    const text = `flex text-blue-primary font-bold font-inter text-sm items-center ${props?.mr}`
+
 
     return (
         <button

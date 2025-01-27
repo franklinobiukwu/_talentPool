@@ -1,15 +1,13 @@
-import { useState } from "react";
 import Avatar from "../assets/avatar.png"
 import { MdModeEditOutline } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getApiUrl, getToken } from "../hooks/utilityFns.jsx";
-import axios from "axios";
+import { api, getToken } from "../hooks/utilityFns.jsx";
+import useCapitalizeWords from "../hooks/useCapitalizeWords.jsx";
 
-const apiUrl = getApiUrl()
 const token = getToken()
 
 const updateProfileImage = async (formData) => {
-    const response = await axios.post(`${apiUrl}/user/profile/photo`, formData, {
+    const response = await api.post(`/user/profile/photo`, formData, {
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data"
@@ -18,6 +16,7 @@ const updateProfileImage = async (formData) => {
     return response.data
 }
 
+const capitalizeWords = useCapitalizeWords()
 const InfoCard = (props) => {
 
     const queryClient = useQueryClient()
@@ -72,7 +71,7 @@ const InfoCard = (props) => {
                 </div>
                 {/* Details */}
                 <div>
-                    <h3 className="font-inter font-bold text-sm text-blue-primary">{props.name}</h3>
+                    <h3 className="font-inter font-bold text-sm text-blue-primary">{capitalizeWords( props.name)}</h3>
                     <p className="font-roboto text-sm text-blue-primary">{props.email}</p>
                 </div>
             </div>

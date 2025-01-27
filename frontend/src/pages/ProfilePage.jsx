@@ -4,17 +4,17 @@ import InfoCard from "../components/InfoCard"
 import ListCardHeading from "../components/ListCardHeading"
 import PersonalInfoForm from "../components/PersonalInfoForm"
 import useUser from "../hooks/useUser"
-import { getApiUrl, getToken } from "../hooks/utilityFns"
+import { getToken } from "../hooks/utilityFns"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
+import { api } from "../hooks/utilityFns.jsx";
 
 
-const apiUrl = getApiUrl()
 const token = getToken()
 
 // fetch profile image
 const fetchProfileImg = async() => {
-    const response = await axios.get(`${apiUrl}/user/profile/photo`, {
+    const response = await api.get(`/user/profile/photo`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
