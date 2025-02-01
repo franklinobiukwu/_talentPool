@@ -61,7 +61,7 @@ cd _talentPool
 cd backend
 npm install
 ```
-Create a `.env` file in the `backend/` directory and add the necessary environment variables.
+Create a `.env` file in the `backend/` directory and add the necessary environment variables (see [Environment Variables](#environment-variables)).
 
 Start the backend server:
 ```sh
