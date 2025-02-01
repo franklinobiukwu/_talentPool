@@ -6,6 +6,7 @@ const createCvSection = async (req, res) => {
     const {_id: user_id } = req.user
 
     const { sectionName } = req.body
+    console.log(req.body)
 
     // Ensure SectionName is not empty
     if (!sectionName){

@@ -39,4 +39,12 @@ const loginUser = async (req, res) => {
     }
 }
 
+// Authenticate Use
+const authenticateUser = async (req, res) => {
+    const { token } = req.body
+
+    if (!token){
+        return res.status(401).json({ error: "Token not provided or invalid format"})
+    }
+}
 export { signupUser, loginUser }
