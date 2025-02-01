@@ -1,7 +1,5 @@
-import { IoChatbubblesSharp } from "react-icons/io5";
-import { IoDocumentTextOutline } from "react-icons/io5";
-import { FaRegUser } from "react-icons/fa";
-import { HiOutlineCog6Tooth } from "react-icons/hi2";
+import { IoChatbubblesSharp, IoExtensionPuzzle, IoPerson, IoCogSharp } from "react-icons/io5";
+import { IoDocumentText } from "react-icons/io5";
 import Logo from "../assets/logo.png"
 import { Link } from "react-router";
 
@@ -42,9 +40,10 @@ const SideNav = () => {
             {/*----------Navigation------------*/}
             <div>
                <SideNavBtn text="Feed" icon={<IoChatbubblesSharp/>} link="/dashboard"/> 
-               <SideNavBtn text="Cvs" icon={<IoDocumentTextOutline/>} link="/dashboard/cvs"/> 
-               <SideNavBtn text="Profile" icon={<FaRegUser/>} link="/dashboard/profile"/> 
-               <SideNavBtn text="Settings" icon={<HiOutlineCog6Tooth/>} link="/dashboard/settings"/> 
+               <SideNavBtn text="Cvs" icon={<IoDocumentText/>} link="/dashboard/cvs"/>
+                <SideNavBtn text="Assets" icon={<IoExtensionPuzzle/>} link="/dashboard/assets"/> 
+               <SideNavBtn text="Profile" icon={<IoPerson/>} link="/dashboard/profile"/> 
+               <SideNavBtn text="Settings" icon={<IoCogSharp/>} link="/dashboard/settings"/> 
             </div>
         </div>
     )

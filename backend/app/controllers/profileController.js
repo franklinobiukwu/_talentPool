@@ -8,7 +8,7 @@ const fetchAbout = async (req, res) => {
     const { _id } = req.user
 
     try{
-        const about = await User.findById({_id}).select("about")
+        const about = await User.findById({_id}).select("about -_id")
 
         return res.status(200).json(about)
     }catch(error){
@@ -29,7 +29,7 @@ const updateAbout = async (req, res) => {
     try{
         const updatedAbout = await User.findByIdAndUpdate(
             {_id}, { about }, {new: true}
-        ).select("about")
+        ).select("about -_id")
         
         return res.status(200).json(updatedAbout)
 
@@ -55,9 +55,16 @@ const fetchProfile = async (req, res) => {
 // Update Profile
 const updateProfile = async (req, res) => {
     const profile = req.body
+    console.log({profile})
+
     // return if profile is empty
     if (!profile) {
-        return res.status(400).json("Profile cannot blank")
+        return res.status(400).json({error: "Profile cannot blank"})
+    }
+
+    // return if required fields are blank
+    if (!profile.firstName || !profile.lastName || !profile.email || !profile.gender || !profile.country || !profile.state || !profile.city){
+        return res.status(400).json({error: "Please fill all required fields"})
     }
     const { _id } = req.user
 
@@ -65,6 +72,7 @@ const updateProfile = async (req, res) => {
         const updatedProfile = await User.findByIdAndUpdate(
             {_id}, {...profile}, {new: true}
         ).select(Object.keys(profile).join(" "))
+        console.log({updatedProfile})
 
         return res.status(200).json(updatedProfile)
     }catch(error){
@@ -77,6 +85,7 @@ const uploadPicture = async (req, res) => {
     try{
         const { _id } = req.user
         const file = req.file
+        console.log({file})
 
         if (!file) {
             return res.status(400).json({error: "No file uploaded"})

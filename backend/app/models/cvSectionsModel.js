@@ -1,40 +1,20 @@
 import { Schema, SchemaTypes, model } from "mongoose";
 
-
-// Sub-schema for history
-const historySchema = new Schema({
-    updatedBy: {
-        type: SchemaTypes.ObjectId,
-        ref: "Users",
-        required: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
-    },
-},
-{ _id: false } // Prevents creation of extra _id for sub-documents
-)
-
 const cvSectionSchema = new Schema({
-    sections: {
-        type: [String],
-        validate: {
-            validator: (sections) => {
-                return new Set(sections).size === sections.length // Check uniqueness
-            },
-            message: "Section must be unique."
-        }
-    },
-    history: {
-        type: [historySchema],
-        default: [],
+    user_id: {
+        type: SchemaTypes.ObjectId,
+        ref: "User",
         required: true
-    }
-}, { timestamps: true })
+    },
+    sectionName: {
+        type: String,
+        required: true,
+        set: (value) => value.toLowerCase() // convert to lowercase before saving
+    },
+})
 
-// index sections
-cvSectionSchema.index({ sections: 1})
+// Add an index for efficient querying by user_id
+cvSectionSchema.index({ user_id: 1, sectionName: 1 }, { unique: true })
 
 const CvSection = model("CvSection", cvSectionSchema)
 

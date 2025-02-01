@@ -16,6 +16,7 @@ const signupUser = async (req, res) => {
 
         res.status(201).json({ _id: user._id, firstName, lastName, email, token })
     } catch (error){
+        console.error(error.message)
         res.status(400).json({ error: error.message})
     }
 }
@@ -38,4 +39,12 @@ const loginUser = async (req, res) => {
     }
 }
 
+// Authenticate Use
+const authenticateUser = async (req, res) => {
+    const { token } = req.body
+
+    if (!token){
+        return res.status(401).json({ error: "Token not provided or invalid format"})
+    }
+}
 export { signupUser, loginUser }
