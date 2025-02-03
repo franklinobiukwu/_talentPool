@@ -19,6 +19,7 @@ const createCvSection = async (req, res) => {
         // Convert the document to an object and exclude unwanted fields
         const {__v, user_id: _, ...responseData} = newCvSection.toObject()
 
+        console.log({responseData})
         return res.status(201).json(responseData)
     }catch(error){
         console.error(error)

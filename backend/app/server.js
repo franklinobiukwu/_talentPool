@@ -15,14 +15,21 @@ cloudinary.config({
 // Import Routers
 import userRouter from "./routes/userRoutes.js"
 import authenticationRouter from "./routes/authenticationRoutes.js"
+import cookieParser from 'cookie-parser';
 
 const app = express()
 const port = 3000
 const connectionString = process.env.CONNECTION_STRING
 
 // Middlewares
+app.use(cookieParser())
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true, // Allow cookies to be sent
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["content-type", "Authorization"]
+}))
 app.use(express.json())
-app.use(cors())
 
 // Routes
 app.use("/", authenticationRouter)

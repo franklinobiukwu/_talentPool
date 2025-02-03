@@ -9,14 +9,15 @@ const requireAuth = async (req, res, next) => {
     }
     
     // Split authorization header to get token
-    const token = authorization.split(' ')[1]
+    const accessToken = authorization.split(' ')[1]
+    const secret_key = process.env.ACCESS_TOKEN_SECRET
 
-    if (!token) {
+    if (!accessToken) {
         return res.status(401).json({ error: "Token not provided or invalid format"})
     }
 
     try{
-        const { _id } = jwt.verify(token, process.env.SECRET_KEY)
+        const { _id } = jwt.verify(accessToken, secret_key)
         req.user = await User.findOne({_id})
         next()
     }catch(error){

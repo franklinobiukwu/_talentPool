@@ -4,17 +4,20 @@ import FormSelector from "./FormSelector.jsx";
 import Button from "./Button.jsx";
 import { FaEdit } from "react-icons/fa"
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { api, getToken } from "../hooks/utilityFns.jsx";
+import { api, getAccessToken } from "../hooks/utilityFns.jsx";
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const token = getToken()
 
 // Fetch Personal Profile
 const fetchPersonalProfile = async() => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No accessToken found")
+
     const response = await api.get(`/user/profile`, {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${accessToken}`
         }
     })
     return response.data
@@ -22,9 +25,13 @@ const fetchPersonalProfile = async() => {
 
 // Update Personal Profile
 const updatePersonalProfile = async (data) => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No accessToken found")
+
     const response = await api.patch(`/user/profile`, data, {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${accessToken}`
         }
     })
     return response.data
@@ -101,9 +108,18 @@ const PersonalInfoForm = (props) => {
     // Set Form Field State with value from fetch operation
     useEffect(() => {
         if (isSuccess && !isPending && data){
-            if (data.firstName) setFname(capitalizeWords(data.firstName))
-            if (data.lastName) setLname(capitalizeWords(data.lastName))
-            if (data.email) setEmail(data.email.toLowerCase())
+            if (data.firstName) {
+                setFname(capitalizeWords(data.firstName))
+                props.setFirstName(data.firstName)
+            }
+            if (data.lastName) {
+                setLname(capitalizeWords(data.lastName))
+                props.setLastName(data.lastName)
+            }
+            if (data.email) {
+                setEmail(data.email.toLowerCase())
+                props.setEmail(data.email.toLowerCase())
+            }
             if (data.phoneNumber) setPhoneNumber(data.phoneNumber)
             if (data.gender) setGender(capitalizeWords(data.gender))
             if (data.city) setCity(capitalizeWords(data.city))
@@ -178,7 +194,7 @@ const PersonalInfoForm = (props) => {
                                 placeholder="John"
                                 value={firstName}
                                 onChange={(e) => setFname(e.target.value)}
-                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
+                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>
@@ -196,7 +212,7 @@ const PersonalInfoForm = (props) => {
                                 //className="rounded border px-2 py-0.5 w-52 text-blue-primary"
                                 value={lastName}
                                 onChange={(e) => setLname(e.target.value)}
-                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
+                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>
@@ -217,7 +233,7 @@ const PersonalInfoForm = (props) => {
                                 //className="rounded border px-2 py-0.5 w-52 text-blue-primary"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
+                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>
@@ -234,7 +250,7 @@ const PersonalInfoForm = (props) => {
                                 //className="rounded border px-2 py-0.5 w-52 text-blue-primary"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent'}`}
+                                className={`rounded border px-2 py-0.5 w-52 text-blue-primary ${!isEdit && 'border-none bg-transparent px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>
@@ -261,7 +277,7 @@ const PersonalInfoForm = (props) => {
                                     value={gender}
                                     onChange={(e) => setGender(e.target.value)}
                                     className={`rounded border px-2 py-0.5 w-52
-                                        text-blue-primary ${!isEdit && 'border-none bg-transparent appearance-none'}`}
+                                        text-blue-primary ${!isEdit && 'border-none bg-transparent appearance-none px-0'}`}
                                     disabled={!isEdit}
                                 >
                                     <option value={"male"}>Male</option>
@@ -283,7 +299,7 @@ const PersonalInfoForm = (props) => {
                                 className={
                                     `rounded border px-2 py-0.5 w-52 
                                     text-blue-primary 
-                                    ${!isEdit && 'border-none bg-transparent appearance-none'}`}
+                                    ${!isEdit && 'border-none bg-transparent appearance-none px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>
@@ -305,7 +321,7 @@ const PersonalInfoForm = (props) => {
                                 className={
                                     `mr-5 rounded border px-2 py-0.5 
                                     w-52 text-blue-primary 
-                                    ${!isEdit && 'border-none bg-transparent appearance-none'}`}
+                                    ${!isEdit && 'border-none bg-transparent appearance-none px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>
@@ -321,7 +337,7 @@ const PersonalInfoForm = (props) => {
                                 className={
                                     `rounded border px-2 py-0.5 w-52 
                                     text-blue-primary 
-                                    ${!isEdit && 'border-none bg-transparent appearance-none'}`}
+                                    ${!isEdit && 'border-none bg-transparent appearance-none px-0'}`}
                                 disabled={!isEdit}
                             />
                         </div>

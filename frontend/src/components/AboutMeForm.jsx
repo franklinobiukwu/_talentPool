@@ -2,19 +2,21 @@ import { FaEdit } from "react-icons/fa"
 import Button from "./Button"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { api, getToken } from "../hooks/utilityFns"
+import { api, getAccessToken } from "../hooks/utilityFns"
 import { ThreeDots } from "react-loader-spinner"
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const token = getToken()
-
 
 // Function that Fetches About Me
 const fetchAbout = async () => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No accessToken found")
+
     const response = await api.get(`/user/profile/about`, {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${accessToken}`
         }
     })
     return response.data
@@ -22,9 +24,13 @@ const fetchAbout = async () => {
 
 // Function That Mutatates About Me
 const updateAbout = async (data) => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No access token found")
+
     const response = await api.patch(`/user/profile/about`, {about: data}, {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${accessToken}`
         }
     })
     return response.data 

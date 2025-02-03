@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { loginUser, signupUser } from "../controllers/userController.js";
+import {
+    loginUser, 
+    signupUser, 
+    getNewAccessToken, 
+    logoutUser } from "../controllers/userController.js";
 
 const router = Router()
 
@@ -9,5 +13,10 @@ router.post("/signup", signupUser)
 // Login route
 router.post("/login", loginUser)
 
+// Refresh TOken Route
+router.post("/refresh", getNewAccessToken)
+
+// Logout
+router.post("/logout", logoutUser)
 
 export default router

@@ -16,6 +16,7 @@ const ErrorDisplay = (props) => {
             )}
             {/* Error Text */}
             <div className="text-sm p-2">
+                {console.log({props})}
                 {props.text}
             </div>
         </div>

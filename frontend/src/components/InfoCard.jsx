@@ -1,15 +1,18 @@
 import Avatar from "../assets/avatar.png"
 import { MdModeEditOutline } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, getToken } from "../hooks/utilityFns.jsx";
+import { api, getAccessToken } from "../hooks/utilityFns.jsx";
 import useCapitalizeWords from "../hooks/useCapitalizeWords.jsx";
 
-const token = getToken()
 
 const updateProfileImage = async (formData) => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No accessToken found")
+
     const response = await api.post(`/user/profile/photo`, formData, {
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data"
         }
     })
