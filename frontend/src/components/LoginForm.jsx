@@ -37,6 +37,10 @@ const LoginForm = () => {
             localStorage.setItem("user", JSON.stringify(data))
             // Cache Data Response
             queryClient.setQueryData(["user"], data)
+
+            // Invalidate authentication-related queries to trigger a refetch
+            //queryClient.invalidateQueries(["personal information"]);
+            // Navigate immediately after updating state
             navigate("/dashboard")
         }
     })

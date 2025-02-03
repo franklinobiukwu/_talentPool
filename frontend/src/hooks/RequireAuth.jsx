@@ -1,14 +1,40 @@
-import { Navigate, Outlet, useLocation } from "react-router"
+import { Navigate, Outlet, useLocation } from "react-router";
+import { getAccessToken, api } from "./utilityFns.jsx";
+import { useQuery } from "@tanstack/react-query";
 
-// Function that ensures only logged in (authenticated) users
-// view certain pages, like dashboard
+// Fetch Personal Profile
+const fetchPersonalProfile = async () => {
+    const accessToken = getAccessToken()
+    if (!accessToken) throw new Error("No accessToken found")
+
+    const response = await api.get(`/user/profile`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    })
+    return response.data
+};
 
 const RequireAuth = () => {
-    const user = JSON.parse(localStorage.getItem("user"))
+
+    const accessToken = getAccessToken()
     const location = useLocation()
 
-    return (
-        user ? (<Outlet/>) : <Navigate to="/" state={{ from: location }} replace/>
-    )
-}
+    const { isError } = useQuery({
+        queryKey: ["auth-user"],
+        queryFn: fetchPersonalProfile,
+        enabled: !!accessToken, // Only run query if accessToken exists
+        retry: false, // Prevent infinite retry loops on failure
+    })
+
+    // Handle unauthorized users
+    if (!accessToken || isError) {
+        console.log("User not authenticated. Redirecting...")
+        localStorage.removeItem("user"); // Remove user data
+        return <Navigate to="/" state={{ from: location }} replace />
+    }
+
+    return <Outlet />
+};
+
 export default RequireAuth

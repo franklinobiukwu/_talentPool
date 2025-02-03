@@ -4,19 +4,22 @@ import InfoCard from "../components/InfoCard"
 import ListCardHeading from "../components/ListCardHeading"
 import PersonalInfoForm from "../components/PersonalInfoForm"
 import useUser from "../hooks/useUser"
-import { getToken } from "../hooks/utilityFns"
+import { getAccessToken } from "../hooks/utilityFns"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { api } from "../hooks/utilityFns.jsx";
 
 
-const token = getToken()
 
 // fetch profile image
 const fetchProfileImg = async() => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No accessToken found")
+
     const response = await api.get(`/user/profile/photo`, {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${accessToken}`
         }
     })
     return response.data
@@ -26,9 +29,9 @@ const ProfilePage = () => {
 
     // Get User Primary Details
     const user = useUser()
-    const [firstName, setFirstName] = useState(user.firstName)
-    const [lastName, setLastName] = useState(user.lastName)
-    const [email, setEmail] = useState(user.email)
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+    const [email, setEmail] = useState('')
 
     // Fetch User Profile Picture
     const { data, isPending: isPendingImg, isError, error } = useQuery({

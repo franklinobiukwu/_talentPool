@@ -27,7 +27,7 @@ const userSchema = new Schema({
     phoneNumber: {
         type: String,
         validate: {
-            validator: (phone) => /^\d{10,15}$/.test(phone),
+            validator: (phone) => /^\+?\d{10,15}$/.test(phone),
             message: "Invalid phone number format."
         }
     },
@@ -69,6 +69,10 @@ const userSchema = new Schema({
             platform: {type: String, required: true},
             handle: {type: String, required: true}
         }]
+    },
+    refreshToken: {
+        type: String,
+        required: true
     }
 },
 {
@@ -76,9 +80,12 @@ const userSchema = new Schema({
 })
 
 // Static Signup Method
-userSchema.statics.signup = async function (firstName, lastName, email, gender, password, confirmPassword) {
+userSchema.statics.signup = async function (
+    firstName, lastName, email, gender, password, confirmPassword, refreshToken) {
     // Validate parameters
-    if (!firstName || !lastName || !email || !gender || !password || !confirmPassword) {
+    if (
+        !firstName || !lastName || !email || !gender 
+        || !password || !confirmPassword || refreshToken) {
         throw Error("All fields must be fielled.")
     }
 
@@ -107,7 +114,7 @@ userSchema.statics.signup = async function (firstName, lastName, email, gender, 
 
     // create user in database
     const user = await this.create({
-        firstName, lastName, email, gender, password: hashedPassword
+        firstName, lastName, email, gender, password: hashedPassword, refreshToken
     })
 
     return user
@@ -123,13 +130,13 @@ userSchema.statics.login = async function (email, password) {
     // Confirm if email exist in database
     const user = await this.findOne({email})
     if (!user) {
-        throw Error("Invalid Email")
+        throw Error("Invalid email")
     }
 
     // Confirm by matching correct password
     const match = await bcrypt.compare(password, user.password)
     if (!match) {
-        throw Error("Invalid Password")
+        throw Error("Invalid password")
     }
 
     return user

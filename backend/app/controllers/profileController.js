@@ -55,7 +55,6 @@ const fetchProfile = async (req, res) => {
 // Update Profile
 const updateProfile = async (req, res) => {
     const profile = req.body
-    console.log({profile})
 
     // return if profile is empty
     if (!profile) {
@@ -72,7 +71,6 @@ const updateProfile = async (req, res) => {
         const updatedProfile = await User.findByIdAndUpdate(
             {_id}, {...profile}, {new: true}
         ).select(Object.keys(profile).join(" "))
-        console.log({updatedProfile})
 
         return res.status(200).json(updatedProfile)
     }catch(error){
@@ -85,7 +83,6 @@ const uploadPicture = async (req, res) => {
     try{
         const { _id } = req.user
         const file = req.file
-        console.log({file})
 
         if (!file) {
             return res.status(400).json({error: "No file uploaded"})
