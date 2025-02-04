@@ -3,13 +3,19 @@ import AuthBtn from "./AuthBtns"
 import Logo from "../assets/logo.png"
 import { HiOutlinePresentationChartBar } from "react-icons/hi";
 import { IoLogInOutline, IoLogOutOutline } from "react-icons/io5";
+import { api } from "../hooks/utilityFns.jsx";
 
 const Navbar = (props) => {
-    const handleLogout = () => {
-        // Clear Local Storage
-        localStorage.removeItem("user")
-        // Refresh
-        window.location.reload()
+    const handleLogout = async () => {
+        try{
+            await api.post("/logout")
+            // Clear Local Storage
+            localStorage.removeItem("user")
+            // Refresh
+            window.location.reload()
+        } catch (error) {
+            console.error("Failed to logout", error)
+        }
     }
 
     return (

@@ -16,10 +16,8 @@ const api = axios.create({
 const refreshToken = async () => {
     try{
         const response = await api.post("/refresh")
-        console.log({response})
         const { accessToken } = response.data
         localStorage.setItem("user", JSON.stringify({ accessToken }))
-        console.log({accessToken})
         return accessToken
     } catch (error){
         console.error("Refresh access token failed", error)

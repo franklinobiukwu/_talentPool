@@ -9,8 +9,8 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 
 
 const loginFn = async(data) => {
-    const result = await api.post(`/login`, data)
-    return result.data
+    const response = await api.post(`/login`, data)
+    return response.data
 }
 
 const LoginForm = () => {
