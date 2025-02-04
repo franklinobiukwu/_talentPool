@@ -32,6 +32,7 @@ api.interceptors.response.use(
         const originalRequest = error.config
 
         if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+            console.log("About to refresh access token")
             originalRequest._retry = true
             const newAccessToken = await refreshToken()
 

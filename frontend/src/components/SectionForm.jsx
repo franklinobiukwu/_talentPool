@@ -1,30 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect} from "react"
 import Button from "./Button.jsx"
 import ErrorDisplay from "./ErrorDisplay.jsx";
 
 
 
 const SectionForm = (props) => {
-    const [cancelTriggered, setCancelTriggered] = useState(false)
-
-    const handleCancel = () => {
-        setCancelTriggered(true)
-        props.setSectionName('')
-        props.setErrorMessage('')
-    }
-
-    const handleSubmit = (e) => {
-        props.handleSubmit(e)
-        handleCancel()
-    }
-
-    useEffect(() => {
-        if (cancelTriggered && props.sectionName==="") {
-            props.setFormIsOpen && props.setFormIsOpen(false)
-            setCancelTriggered(false)
-            props.setIsEditSection(false)
-        }
-    }, [props.sectionName, cancelTriggered])
 
     // Set Error Message State
     useEffect(() => {
@@ -39,18 +19,21 @@ const SectionForm = (props) => {
                 {props.isEditSection ? "Edit Section" : "Add Section"}
             </h3>
             <form> 
-                <div className="mb-5">
+                <div className="mb-2">
                     <input
                         type="text"
                         name="props.sectionName"
                         placeholder="education"
-                        onChange={(e) => props.setSectionName(e.target.value)}
+                        onChange={(e) => {
+                            props.setErrorMessage('')
+                            props.setSectionName(e.target.value)
+                        }}
                         className={`rounded border px-2 py-0.5 w-52 text-blue-primary `}
                         value={props.sectionName}
                     />
                 </div>
                 {/* Display Errors */}
-                {(props.isError && props.errorMessage) && (
+                {((props.isError || props.updateIsError) && props.errorMessage) && (
                     <div className="mb-2">
                         <ErrorDisplay
                             text={props.errorMessage}
@@ -64,7 +47,9 @@ const SectionForm = (props) => {
                         <Button
                             text="Submit"
                             style="dark"
-                            onClick={handleSubmit}
+                            onClick={
+                                props.isEditSection
+                                ? props.handleUpdate : props.handleSubmit}
                             disabled={props.isPending}
                             isLoading={props.isPending}
                         />
@@ -72,7 +57,7 @@ const SectionForm = (props) => {
                     <Button
                         text="Cancel"
                         style="light"
-                        onClick={handleCancel}
+                        onClick={props.handleCancel}
                         disabled={props.isPending}
                     />
                 </div>

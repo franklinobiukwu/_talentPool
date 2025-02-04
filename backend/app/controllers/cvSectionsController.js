@@ -70,6 +70,9 @@ const updateCvSections = async (req, res) => {
         return res.status(200).json(updatedCvSection)
     }catch(error){
         console.error("Error updating CV section:", error)
+        if (error.code === 11000) {
+            return res.status(400).json({error: `${error.keyValue.sectionName} already exists.`})
+        }
         return res.status(500).json({ error: `Couldn't update CV section: ${error.message}`})
     }
 }

@@ -17,7 +17,6 @@ const createSection = async (sectionName) => {
             Authorization: `Bearer ${accessToken}`
         }
     })
-    console.log({response})
     return response?.data
 }
 
@@ -47,9 +46,27 @@ const SettingsPage = () => {
     // Error State
     const [errorMessage, setErrorMessage] = useState('')
 
+    // monitor Form Cancel Trigger
+    const [cancelTriggered, setCencelTrigger] = useState(false)
+
     // Get Query Client Instance
     const queryClient = useQueryClient()
 
+    // Function to Cancel form
+    const handleCancel = () => {
+        setCencelTrigger(true)
+        setSectionName("")
+        setErrorMessage("")
+    }
+
+    // Close form
+    useEffect(() => {
+        if (cancelTriggered && sectionName==="") {
+            setFormIsOpen(false)
+            setCencelTrigger(false)
+            setIsEditSection(false)
+        }
+    }, [sectionName, cancelTriggered])
  
     // Mutation Fxn to create sectionName
     const { mutate, isPending, isError, error } = useMutation({
@@ -61,15 +78,12 @@ const SettingsPage = () => {
                 if (!oldData) return [newData]
                 return [...oldData, newData]
             })
-//            setCancelTriggered(true)
-            setSectionName('')
-            setErrorMessage('')
-
+            // Close form
+            handleCancel()
         }
     })
 
     useEffect(() => {
-        console.log({error})
         if (error) {
             setErrorMessage(error.message || "An error occurred")
         }
@@ -79,7 +93,6 @@ const SettingsPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
         setErrorMessage('')
-        console.log({sectionName})
         mutate(sectionName)
     }
 
@@ -90,12 +103,18 @@ const SettingsPage = () => {
         isError:updateIsError,
         error:updateError} = useMutation({
             mutationFn: updateSection,
-            onSuccess: (updatedSectionName) => {
+            onSuccess: (updatedSection) => {
                 queryClient.setQueryData(["cvSections"], (oldData) => {
-                    if (!oldData) return [updatedSectionName]
-                    return [...oldData, updatedSectionName]
+                    if (!oldData) return [updatedSection]
+                    const filteredData = oldData.filter((section) => {
+                        return section._id !== updatedSection._id
+                    })
+                    return [...filteredData, updatedSection]
                 })
-            }
+                // Close form
+                handleCancel()
+            },
+            onError: (error) => setErrorMessage(error.response.data.error)
     })
 
     // Function to handle Update sectionName
@@ -141,6 +160,9 @@ const SettingsPage = () => {
                         isPending={isPending}
                         errorMessage={errorMessage}
                         setErrorMessage={setErrorMessage}
+                        handleCancel={handleCancel}
+                        handleUpdate={handleUpdate}
+                        updateIsError={updateIsError}
                     />
                 </div>
             </div>

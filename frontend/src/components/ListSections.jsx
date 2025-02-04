@@ -17,7 +17,6 @@ const fetchSections = async() => {
         }
     })
     
-    console.log({response})
     return response?.data
 }
 
@@ -65,9 +64,7 @@ const ListSections = (props) => {
     const {mutate, isPending:isPendingDelete, isError:isErrorDelete, error:errorDelete } = useMutation({
         mutationFn: deleteSection,
         onSuccess: (deletedSection) => {
-            console.log({deletedSection})
             queryClient.setQueryData(["cvSections"], (oldData) => {
-                console.log({oldData})
                 const updatedSections = oldData?.filter((section) => (
                     section._id !== deletedSection._id
                 ))
@@ -81,12 +78,7 @@ const ListSections = (props) => {
         mutate(sectionId)
     }
 
-    const handleUpdate = ({_id, title}) => {
-
-    }
-
     const handleEdit = ({title, _id}) => {
-        console.log({title, _id})
         props.setSectionName(title)
         props.setSectionId(_id)
         props.setIsEditSection(true)
@@ -106,7 +98,6 @@ const ListSections = (props) => {
             {/* Display Loading */}
             {isPending && <div>Loading...</div>}
             {/* Sections List */}
-        {console.log({data})}
             <div>
                 {data?.map((section) => (
                     <div key={section?._id} className="mb-2">
