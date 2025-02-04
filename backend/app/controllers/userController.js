@@ -69,7 +69,6 @@ const loginUser = async (req, res) => {
         // Save refreshToken in DB
         user.refreshToken = refreshToken
         await user.save()
-        console.log("Saved user and refresh token")
 
         // Send tokens (Store refresh token in HTTP-only cookie)
         res.cookie("refreshToken", refreshToken, {

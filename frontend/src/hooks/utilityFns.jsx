@@ -16,10 +16,8 @@ const api = axios.create({
 const refreshToken = async () => {
     try{
         const response = await api.post("/refresh")
-        console.log({response})
         const { accessToken } = response.data
         localStorage.setItem("user", JSON.stringify({ accessToken }))
-        console.log({accessToken})
         return accessToken
     } catch (error){
         console.error("Refresh access token failed", error)
@@ -33,7 +31,7 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
-        if (error.response?.status === 403 && !originalRequest._retry) {
+        if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
             originalRequest._retry = true
             const newAccessToken = await refreshToken()
 

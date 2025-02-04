@@ -25,6 +25,8 @@ const RequireAuth = () => {
         queryFn: fetchPersonalProfile,
         enabled: !!accessToken, // Only run query if accessToken exists
         retry: false, // Prevent infinite retry loops on failure
+        cacheTime: 0,
+        staleTime: 0
     })
 
     // Handle unauthorized users

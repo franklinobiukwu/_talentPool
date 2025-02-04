@@ -13,6 +13,11 @@ const SectionForm = (props) => {
         props.setErrorMessage('')
     }
 
+    const handleSubmit = (e) => {
+        props.handleSubmit(e)
+        handleCancel()
+    }
+
     useEffect(() => {
         if (cancelTriggered && props.sectionName==="") {
             props.setFormIsOpen && props.setFormIsOpen(false)
@@ -59,7 +64,7 @@ const SectionForm = (props) => {
                         <Button
                             text="Submit"
                             style="dark"
-                            onClick={props.handleSubmit}
+                            onClick={handleSubmit}
                             disabled={props.isPending}
                             isLoading={props.isPending}
                         />
