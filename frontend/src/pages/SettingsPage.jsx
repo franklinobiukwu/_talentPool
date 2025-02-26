@@ -10,7 +10,7 @@ import { api, getAccessToken } from "../hooks/utilityFns.jsx";
 const createSection = async (sectionName) => {
     const accessToken = getAccessToken()
 
-    if (!accessToken) throw new Error("No accessToken found")
+    if (!accessToken) throw new Error("No access token found")
 
     const response = await api.post("/user/cvsections", {sectionName}, {
         headers: {

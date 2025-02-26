@@ -8,6 +8,7 @@ import { api } from "../hooks/utilityFns.jsx";
 const Navbar = (props) => {
     const handleLogout = async () => {
         try{
+            console.log("Loggingout...")
             await api.post("/logout")
             // Clear Local Storage
             localStorage.removeItem("user")

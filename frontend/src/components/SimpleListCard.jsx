@@ -1,46 +1,48 @@
-import { IoTrash } from "react-icons/io5"
-import { MdModeEdit } from "react-icons/md"
-import Button from "./Button"
-import useCapitalizeWords from "../hooks/useCapitalizeWords"
-import { ThreeDots } from "react-loader-spinner"
+import { IoTrash } from "react-icons/io5";
+import { MdModeEdit } from "react-icons/md";
+import Button from "./Button";
+import useCapitalizeWords from "../hooks/useCapitalizeWords";
+import { ThreeDots } from "react-loader-spinner";
 
-const SimpleListCard = (props) => {
-    const capitalizeWords = useCapitalizeWords()
+const SimpleListCard = ({ title, isLoading, _id, deleteId, handleEdit, handleDelete }) => {
+    const capitalizeWords = useCapitalizeWords();
+
     return (
-        <div className="flex justify-between shadow-sm rounded py-2 px-5 border border-white-primary">
+        <div className="flex justify-between items-center bg-white shadow-sm rounded-lg py-3 px-5 border border-gray-200 transition-all hover:shadow-md">
             {/* Title */}
-            <div className="text-blue-primary font-medium">
-                {capitalizeWords(props.title)}
+            <div className="text-gray-700 font-semibold text-sm">
+                {capitalizeWords(title)}
             </div>
+
             {/* Buttons */}
-            <div className="flex justify-center items-center">
+            <div className="flex items-center gap-3">
+                {/* Edit Button */}
                 <Button
                     style="text"
-                    mr={"mr-2"}
-                    icon={<MdModeEdit/>}
-                    onClick={() => props.handleEdit(props)}
+                    icon={<MdModeEdit className="text-blue-secondary hover:text-blue-700 transition-colors" />}
+                    onClick={() => handleEdit({ title, _id })}
                 />
-                {(props.isLoading && props._id === props.deleteId) ? (
+
+                {/* Delete Button or Loader */}
+                {isLoading && _id === deleteId ? (
                     <ThreeDots
                         visible={true}
-                        height={"25"}
-                        width={"25"}
+                        height={25}
+                        width={25}
                         color="#032c4878"
-                        radius={"9"}
+                        radius={9}
                         ariaLabel="three-dots-loading"
-                        wrapperStyle={{}}
-                        wrapperClass=""
                     />
-
-                ) :(
+                ) : (
                     <Button
                         style="text"
-                        icon={<IoTrash className="text-red-400"/>}
-                        onClick={() => props.handleDelete(props._id)}
+                        icon={<IoTrash className="text-red-500 hover:text-red-700 transition-colors" />}
+                        onClick={() => handleDelete(_id)}
                     />
                 )}
             </div>
         </div>
-    )
-}
-export default SimpleListCard
+    );
+};
+
+export default SimpleListCard;

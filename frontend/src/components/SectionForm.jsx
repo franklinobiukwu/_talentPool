@@ -1,69 +1,77 @@
-import { useEffect} from "react"
-import Button from "./Button.jsx"
+import { useEffect } from "react";
+import Button from "./Button.jsx";
 import ErrorDisplay from "./ErrorDisplay.jsx";
 
-
-
-const SectionForm = (props) => {
-
+const SectionForm = ({
+    isEditSection,
+    sectionName,
+    setSectionName,
+    handleUpdate,
+    handleSubmit,
+    handleCancel,
+    isPending,
+    isError,
+    updateIsError,
+    error,
+    errorMessage,
+    setErrorMessage
+}) => {
     // Set Error Message State
     useEffect(() => {
-        if (props.isError) {
-            props.setErrorMessage(props.error?.message)
+        if (isError) {
+            setErrorMessage(error?.message);
         }
-    }, [props.isError])
+    }, [isError, error, setErrorMessage]);
 
     return (
-        <div className="bg-gradient-to-br from-gray-50 to-white-primary p-5 rounded shadow-md">
-            <h3 className="mb-5 text-blue-primary font-bold text-md font-inter">
-                {props.isEditSection ? "Edit Section" : "Add Section"}
+        <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+            {/* Title */}
+            <h3 className="mb-4 text-blue-primary font-semibold text-lg">
+                {isEditSection ? "Edit Section" : "Add Section"}
             </h3>
-            <form> 
-                <div className="mb-2">
+
+            {/* Form */}
+            <form className="space-y-4">
+                {/* Input Field */}
+                <div>
                     <input
                         type="text"
-                        name="props.sectionName"
-                        placeholder="education"
+                        name="sectionName"
+                        placeholder="Enter section name (e.g., education)"
                         onChange={(e) => {
-                            props.setErrorMessage('')
-                            props.setSectionName(e.target.value)
+                            setErrorMessage('');
+                            setSectionName(e.target.value);
                         }}
-                        className={`rounded border px-2 py-0.5 w-52 text-blue-primary `}
-                        value={props.sectionName}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-secondary transition-all"
+                        value={sectionName}
                     />
                 </div>
-                {/* Display Errors */}
-                {((props.isError || props.updateIsError) && props.errorMessage) && (
-                    <div className="mb-2">
-                        <ErrorDisplay
-                            text={props.errorMessage}
-                            setErrorMessage={props.setErrorMessage}
-                        />
-                    </div>
+
+                {/* Error Display */}
+                {(isError || updateIsError) && errorMessage && (
+                    <ErrorDisplay text={errorMessage} setErrorMessage={setErrorMessage} />
                 )}
+
                 {/* Buttons */}
-                <div className="flex">
-                    <div className="mr-2">
-                        <Button
-                            text="Submit"
-                            style="dark"
-                            onClick={
-                                props.isEditSection
-                                ? props.handleUpdate : props.handleSubmit}
-                            disabled={props.isPending}
-                            isLoading={props.isPending}
-                        />
-                    </div>
+                <div className="flex items-center gap-3">
+                    <Button
+                        text="Submit"
+                        style="dark"
+                        onClick={isEditSection ? handleUpdate : handleSubmit}
+                        disabled={isPending}
+                        isLoading={isPending}
+                    />
                     <Button
                         text="Cancel"
                         style="light"
-                        onClick={props.handleCancel}
-                        disabled={props.isPending}
+                        onClick={handleCancel}
+                        disabled={isPending}
                     />
                 </div>
-                
             </form>
         </div>
-    ) 
-}
-export default SectionForm
+    );
+};
+
+export default SectionForm;
+

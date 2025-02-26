@@ -5,7 +5,7 @@ const AuthBtn = (props) => {
                             rounded text-blue-primary font-bold
                             font-inter flex items-center text-sm`;
 
-    const dark = `px-4 py-1.5 bg-blue-primary text-white-primary
+    const dark = `px-4 py-1.5 bg-blue-primary text-offWhite
                         rounded border border-blue-primary font-bold font-inter flex items-center text-sm`;
 
     return (

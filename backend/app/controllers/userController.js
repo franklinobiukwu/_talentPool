@@ -89,12 +89,14 @@ const loginUser = async (req, res) => {
 // Generate new Access Token
 const getNewAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
+    console.log({refreshToken})
 
     if (!refreshToken) return res.status(401).json({ message: "Unauthorized" })
 
     try{
         // Verify Refresh Token
         const decode = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+        console.log("decoded jwt")
 
         // Find user in DB
         const user = await User.findById(decode._id)
@@ -105,6 +107,7 @@ const getNewAccessToken = async (req, res) => {
         // Generate new Access Token
         const accessToken = createAccessToken(user._id, user.email)
 
+        console.log("Access token generate", accessToken)
         return res.json({ accessToken })
     } catch(error){
         return res.status(403).json({ message: `Invalid refresh token: ${error}` })

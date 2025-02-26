@@ -1,18 +1,103 @@
-const AssetForm = () => {
+import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { api, getAccessToken } from "../hooks/utilityFns.jsx";
+import Button from "./Button.jsx";
+import SubmitButton from "./SubmitButton.jsx";
+import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
+
+
+const AssetForm = ({ asset = null, onSuccess, sections }) => {
+    const [formData, setFormData] = useState({ section: "", content: "", tags: "" });
+    const [error, setError] = useState("");
+
+    const validSections = sections && sections?.map(section => section.sectionName)
+    
+    useEffect(() => {
+        if (asset) {
+            setFormData({ section: asset.section, content: asset.content, tags: asset.tags.join(", ") });
+        }
+    }, [asset]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setError("");
+    };
+
+    const handleTagsChange = (e) => {
+        setFormData(prev => ({ ...prev, tags: e.target.value }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const accessToken = getAccessToken();
+        if (!accessToken) {
+            setError("No access token found");
+            return;
+        }
+        const payload = { 
+            section: formData.section, 
+            content: formData.content, 
+            tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag)
+        };
+        mutation.mutate(payload);
+    };
+
+    const mutation = useMutation({
+        mutationFn: async (data) => {
+            const url = asset ? `/user/cvassets/${asset._id}` : "/user/cvassets";
+            const method = asset ? "patch" : "post";
+            
+            const response = await api[method](url, data, {
+                headers: { Authorization: `Bearer ${getAccessToken()}` }
+            });
+            return response.data;
+        },
+        onSuccess: () => {
+            setFormData({content: "", section: "", tags: ""})
+        },
+        onError: (err) => setError(err.response?.data?.error || "Operation failed")
+    });
+
     return (
-        <div>
-            <form>
-                {/* Section */}
-                <div>
-                </div>
-                {/* Content */}
-                <div>
-                </div>
-                {/* Tag */}
-                <div>
-                </div>
-            </form>
-        </div>
-    )
-}
-export default AssetForm
+        <form onSubmit={handleSubmit} className="p-4 border rounded">
+            <h3 className="text-lg font-bold mb-4">{asset ? "Edit Asset" : "Create Asset"}</h3>
+            {error && <p className="text-red-500 mb-2">{error}</p>}
+            <div className="mb-2">
+                <label className="block text-sm font-medium">Section</label>
+                <select name="section" value={formData.section} onChange={handleChange} required className="w-full p-2 border rounded">
+                    <option value="" disabled>Select a section</option>
+                    {validSections && validSections?.map(sec => (
+                        <option key={sec} value={sec}>{sec}</option>
+                    ))}
+                </select>
+            </div>
+            <div className="mb-2">
+                <label className="block text-sm font-medium">Content</label>
+                <textarea name="content" value={formData.content} onChange={handleChange} required className="w-full p-2 border rounded" rows="4"></textarea>
+            </div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium">Tags (comma-separated)</label>
+                <input type="text" name="tags" value={formData.tags} onChange={handleTagsChange} className="w-full p-2 border rounded" />
+            </div>
+            <div className="flex">
+                <SubmitButton
+                    text="Cancel"
+                    style="transparent"
+                    className="mr-2"
+                    icon={<IoCloseCircleOutline/>}
+                />
+                <SubmitButton
+                    text={asset ? "Update" : "Create"}
+                    style="solid"
+                    onClick={handleSubmit}
+                    isLoading={mutation.isPending}
+                    disabled={!formData.section || !formData.content || !formData.tags}
+                />
+            </div>
+        </form>
+    );
+};
+
+export default AssetForm;
+

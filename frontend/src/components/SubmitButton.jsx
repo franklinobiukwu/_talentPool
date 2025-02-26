@@ -4,11 +4,11 @@ const SubmitButton = (props) => {
     
     const transparent = `px-4 py-1.5 border border-blue-primary 
                             rounded text-blue-primary
-                            font-inter flex items-center`;
+                            font-inter flex items-center ${props.className}`;
 
-    const solid = `px-4 py-1 bg-blue-primary text-white-primary
+    const solid = `px-4 py-1 bg-blue-primary text-offWhite
                         rounded border border-blue-primary
-                        font-inter flex items-center font-semibold
+                        font-inter flex items-center font-semibold ${props.className}
                     ${(props.disabled || props.isLoading)&&'bg-blue-trans border-none'}`;
     return (
         <button
@@ -17,6 +17,7 @@ const SubmitButton = (props) => {
             disabled={props.disabled || props.isLoading}
             className={props.style && (props.style == 'transparent' ? transparent : solid)}
         >
+        {props.icon && !props.isLoading && <span className="mr-2">{props.icon}</span>}
         {props.isLoading? 
             (<Puff
                 visible={true}

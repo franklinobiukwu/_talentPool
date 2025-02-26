@@ -5,7 +5,7 @@ const Button = (props) => {
                             rounded text-blue-primary font-bold
                             font-inter flex items-center text-sm ${props?.mr}`;
 
-    const dark = `px-4 py-1.5 bg-blue-primary text-white-primary
+    const dark = `px-4 py-1.5 bg-blue-primary text-offWhite
                         rounded border border-blue-primary font-bold
                         font-inter flex items-center text-sm ${
                             (props.disabled || props.isLoading) && 'bg-blue-trans border-none'} ${props?.mr}`;
@@ -14,9 +14,10 @@ const Button = (props) => {
 
     return (
         <button
-            type="button"
+            type={props.type || "button"}
             onClick={props.onClick&&props.onClick}
             disabled={props.disabled || props.isLoading}
+            className={props.className}
         >
         {/*        <Link to={props.path}>*/}
             <div className={props.style && (props.style == 'light' ? light : props.style == 'dark' ? dark : text)}>

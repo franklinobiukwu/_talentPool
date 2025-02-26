@@ -1,4 +1,3 @@
-import axios from "axios"
 import AboutMeForm from "../components/AboutMeForm"
 import InfoCard from "../components/InfoCard"
 import ListCardHeading from "../components/ListCardHeading"
