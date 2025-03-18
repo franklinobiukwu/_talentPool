@@ -3,6 +3,7 @@ import axios from "axios"
 // Return User Token From Local Storage
 const getAccessToken = () => {
     const user = JSON.parse(localStorage.getItem("user"))
+    console.log({user})
     return user?.accessToken || null
 }
 
@@ -31,6 +32,7 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
         console.log({originalRequest})
+        console.log("originalRequest_retry:", originalRequest._retry)
 
         if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
             console.log("About to refresh access token")
@@ -39,8 +41,13 @@ api.interceptors.response.use(
             console.log({newAccessToken})
 
             if (newAccessToken) {
-                api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`
-                return api(originalRequest)
+//                api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`
+                // Update the headers of the original request with the new access token
+                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`
+                const newRequest = await api(originalRequest)
+                console.log({newRequest})
+                // Retry the original request with updated headers
+                return newRequest
             }
         }
 

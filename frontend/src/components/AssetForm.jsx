@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, getAccessToken } from "../hooks/utilityFns.jsx";
-import Button from "./Button.jsx";
 import SubmitButton from "./SubmitButton.jsx";
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const AssetForm = ({ asset = null, onSuccess, sections }) => {
+const AssetForm = ({ asset = null, onSuccess, sections, setFormIsOpen }) => {
     const [formData, setFormData] = useState({ section: "", content: "", tags: "" });
     const [error, setError] = useState("");
+
+    // Get Query Client Instance
+    const queryClient = useQueryClient()
 
     const validSections = sections && sections?.map(section => section.sectionName)
     
@@ -30,6 +32,7 @@ const AssetForm = ({ asset = null, onSuccess, sections }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setError("")
         const accessToken = getAccessToken();
         if (!accessToken) {
             setError("No access token found");
@@ -53,14 +56,25 @@ const AssetForm = ({ asset = null, onSuccess, sections }) => {
             });
             return response.data;
         },
-        onSuccess: () => {
+        onSuccess: (newData) => {
+            queryClient.setQueryData(["cvassets"], (oldData) => {
+                if (!oldData) return [newData]
+                return [...oldData, newData]
+            })
+
             setFormData({content: "", section: "", tags: ""})
+            setFormIsOpen(false)
+            
         },
         onError: (err) => setError(err.response?.data?.error || "Operation failed")
     });
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 border rounded">
+        <form 
+            onSubmit={handleSubmit}
+            className="rounded-lg bg-white shadow-lg
+                        p-6 border border-gray-200 w-1/2 max-w-96"
+        >
             <h3 className="text-lg font-bold mb-4">{asset ? "Edit Asset" : "Create Asset"}</h3>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <div className="mb-2">
@@ -86,6 +100,7 @@ const AssetForm = ({ asset = null, onSuccess, sections }) => {
                     style="transparent"
                     className="mr-2"
                     icon={<IoCloseCircleOutline/>}
+                    onClick={() => setFormIsOpen(false)}
                 />
                 <SubmitButton
                     text={asset ? "Update" : "Create"}

@@ -23,7 +23,7 @@ const Button = (props) => {
             <div className={props.style && (props.style == 'light' ? light : props.style == 'dark' ? dark : text)}>
                 {props.icon &&
 
-                    <div className="mr-2">
+                    <div className="mr-2x">
                         {
                             props.isLoading? (
                                 <ThreeDots

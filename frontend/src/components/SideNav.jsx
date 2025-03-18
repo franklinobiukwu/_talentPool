@@ -25,7 +25,7 @@ const SideNavBtn = ({ text, icon, link }) => {
 
 const SideNav = () => {
     return (
-        <aside className="h-screen w-60 bg-blue-trans2 md:pt-6 shadow-md">
+        <aside className="h-screen w-full bg-blue-trans2 md:pt-6 shadow-md">
             {/* Logo */}
             <Link to="/" className="flex items-center px-8 pb-10">
                 <img src={Logo} alt="logo" className="w-12 mr-3" />

@@ -7,6 +7,7 @@ const LandingPageLayout = () => {
 
     //const userData = queryClient.getQueryData(["user"])
     const userData = JSON.parse(localStorage.getItem("user"))
+    console.log({userData})
     const user = userData ? {...userData, _id: undefined, token: undefined } : null
 
     return (

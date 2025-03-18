@@ -1,7 +1,6 @@
 import { Schema, SchemaTypes, model } from "mongoose";
 import CvSection from "./cvSectionsModel.js";
 
-const validSections = ["education", "summary", "skills", "certifications", "experience"]
 
 const cvAssetSchema = new Schema({
     user_id: {
@@ -13,11 +12,11 @@ const cvAssetSchema = new Schema({
         type: String,
         required: true,
         validate: {
-            validator: function (value) {
-                // Uncomment when the admin feature is ready
-                //const cvSection = await CvSection.findOne({ sections: value });
-                //return !!cvSection;
-                return validSections.includes(value)
+            validator: async function (value) {
+                console.log({value})
+                const cvSection = await CvSection.findOne({ sectionName: value });
+                console.log({cvSection})
+                return !!cvSection;
             },
             message: (props) => `${props.value} is not a valid section.`
         }
@@ -52,7 +51,7 @@ cvAssetSchema.pre("findOneAndUpdate", function(next) {
 })
 
 // indexing
-cvAssetSchema.index({ user_id: 1, section: 1 })
+cvAssetSchema.index({ user_id: 1, section: 1 }, { unique: true})
 
 const CvAsset = model("CvAsset", cvAssetSchema)
 

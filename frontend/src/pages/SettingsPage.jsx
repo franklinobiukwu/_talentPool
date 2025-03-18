@@ -4,6 +4,7 @@ import ListSections from "../components/ListSections"
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { api, getAccessToken } from "../hooks/utilityFns.jsx";
+import PopupModal from "../components/PopupModal"
 
 
 // Create Section
@@ -136,18 +137,10 @@ const SettingsPage = () => {
                 />
             </div>
             {/* Section Form*/}
-            <div 
-                className={`absolute bg-[#032c481c] h-full left-0 w-full overflow-hidden ${!formIsOpen && "hidden"}`}
+            <PopupModal
+                formIsOpen={formIsOpen}
+                setFormIsOpen={setFormIsOpen}
             >
-                <div className="flex justify-end">
-                    <button 
-                        className="text-2xl text-red-400"
-                        onClick={() => setFormIsOpen(false)}
-                    >
-                        <IoClose/>
-                    </button>
-                </div>
-                <div className="flex justify-center items-center h-full">
                     <SectionForm
                         setFormIsOpen={setFormIsOpen}
                         isEditSection={isEditSection}
@@ -164,8 +157,8 @@ const SettingsPage = () => {
                         handleUpdate={handleUpdate}
                         updateIsError={updateIsError}
                     />
-                </div>
-            </div>
+                
+            </PopupModal>
         </div>
     )
 }

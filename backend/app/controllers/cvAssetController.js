@@ -19,7 +19,7 @@ const createCvAsset = async (req, res) => {
     }
 }
 
-// FETCH CV ASSET
+// FETCH ALL CV ASSETS
 const fetchCvAssets = async (req, res) => {
     const { _id:user_id } = req.user // Extract user ID from authenticated request
 
@@ -31,6 +31,34 @@ const fetchCvAssets = async (req, res) => {
     }catch(error){
         console.error("Error fetching CV assets:", error)
         return res.status(500).json({ error: `Error fetching CV assets: ${ error.message }` })
+    }
+}
+
+// FETCH SINGLE CV ASSET
+const fetchCvAsset = async(req, res) => {
+    const {_id:user_id} = req.user
+    const {cvAssetId} = req.params
+
+    // Validate CV asset ID
+    if (!mongoose.Types.ObjectId.isValid(cvAssetId)) {
+        return res.status(400).json({ error: "Invalid CV asset ID"})
+    }
+
+    try{
+        // Fetch Asset
+        const cvAsset = await CvAsset.findById({_id: cvAssetId, user_id})
+
+        // Handle case where CV asset was not found
+        if (!cvAsset) {
+            return res.status(404).json({ error: "CV asset not found"})
+        }
+
+        // Return found CV asset
+        return res.status(200).json(cvAsset)
+    }catch(error){
+        // Log Error
+        console.error(`Error fetching CV asset (ID: ${cvAssetId}, User: ${user_id})`, error)
+        return res.status(500).json({ error: `Couldn't find CV asset: ${ error.message }`})
     }
 }
 
@@ -127,4 +155,7 @@ const searchCvAssets = async (req, res) => {
     }
 }
 
-export {createCvAsset, fetchCvAssets, updateCvAsset, deleteCvAsset, searchCvAssets }
+export {
+    createCvAsset, fetchCvAssets, fetchCvAsset, updateCvAsset,
+    deleteCvAsset, searchCvAssets 
+}

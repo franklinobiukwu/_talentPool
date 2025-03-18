@@ -13,13 +13,13 @@ const DashboardLayout = () =>
 
     return (
         <div>
-            <div className="grid grid-cols-12">
+            <div className="grid grid-cols-12 h-screen">
                 {/*---------SideNav-------------*/}
-                <div className="md:col-span-2 col-span-3 fixed">
+                <div className="md:col-span-2 col-span-3 sticky top-0 h-screen">
                     <SideNav/>
                 </div>
                 {/*---------Main Content--------*/}
-                <div className="md:col-span-10 md:col-start-4 col-span-9">
+                <div className="md:col-span-10 md:col-start-3 col-span-9 h-screen overflow-auto">
                     <Outlet/>
                 </div>
             </div>

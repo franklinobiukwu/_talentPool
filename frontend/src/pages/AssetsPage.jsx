@@ -1,10 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AssetCard from "../components/AssetCard.jsx"
 import AssetForm from "../components/AssetForm.jsx";
 import { api, getAccessToken } from "../hooks/utilityFns.jsx";
+import PopupModal from "../components/PopupModal.jsx";
+import ToolBar from "../components/ToolBar.jsx"
+import SearchBar from "../components/SearchBar.jsx";
+import { useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
+import AssetDisplay from "../components/AssetDisplay.jsx"
 
+
+// Function to fetch assets
 const fetchAssets = async () => {
-
+    
     const accessToken = getAccessToken()
 
     if (!accessToken) throw new Error("No access token found")
@@ -32,17 +41,44 @@ const fetchSections = async () => {
     return response?.data
 }
 
+// Function to delete asset
+const deleteAsset = async (_id) => {
+    const accessToken = getAccessToken()
+
+    if (!accessToken) throw new Error("No token found")
+
+    const response = await api.delete(`/user/cvassets/${_id}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    })
+
+    return response?.data
+}
+
+// Function to Edit Asset
+const updateAsset = () => {
+
+}
+
+
 const AssetsPage = () => {
 
-    const { data, isPending, isError, error } = useQuery({
+    const [formIsOpen, setFormIsOpen] = useState(false)
+    const [displayAsset, setDisplayAsset] = useState(false)
+    const [selectedAssetId, setSelectedAssetId] = useState(null)
+
+    const queryClient = useQueryClient()
+
+    // Fetch Assets
+    const { data:assets, isPending, isError, error } = useQuery({
         queryKey: ["cvassets"],
         queryFn: fetchAssets,
     })
 
-    data && console.log(data)
-
+    // Fetch Sections
     const {
-        data:cvsections,
+        data:cvSections,
         isPending:sectionIsPending,
         isError:sectionIsError,
         error:sectionError} = useQuery({
@@ -50,29 +86,89 @@ const AssetsPage = () => {
         queryFn: fetchSections,
     })
     
-    cvsections && console.log({cvsections})
 
+    // Mutation to delete asset
+    const deleteAssetMutation = useMutation({
+        mutationFn: deleteAsset,
+        onSuccess: (deletedAsset) => {
+            queryClient.setQueryData(["cvassets"], (oldData) => (
+                oldData?.filter((asset) => (
+                    asset._id !== deletedAsset._id
+                ))
+            ))
+        }
+    })
+
+   // Handle asset deletion 
+    const handleDelete = (assetId) => {
+        deleteAssetMutation.mutate(assetId)
+    }
+
+    // Handle asset display in modal
+    const handleDisplayAsset = (_id) => {
+        setSelectedAssetId(_id)
+        console.log({selectedAssetId})
+        setDisplayAsset(true)
+    }
 
     return (
-        <div className="p-5">
+        <div className="p-5 relative h-full">
+            <ToolBar
+                style="mb-5 py-2"
+                title="Assets"
+                setFormIsOpen={setFormIsOpen}
+            >
+                <SearchBar/>
+            </ToolBar>
+
             {/* Assets Card List */}
             <div className="flex gap-4 flex-wrap justify-center">
-                { data ? 
-                    data?.map(asset => (
+                { isPending ? (
+                    <div className="text-center">
+                        <p className="text-gray-500">Loading assets...</p>
+                        <Skeleton count={5} height={100} />
+                    </div>
+                ) : isError ? (
+                    <p className="text-red-500 text-center">Error: {error.message}</p>
+                ) : (
+                    assets?.map((asset) => (
                         <AssetCard
                             key={asset._id}
+                            assetId={asset._id}
                             assetSection={asset.section}
                             assetTags={asset.tags}
+                            deleteAssetMutation={deleteAssetMutation}
+                            onClick={() => handleDisplayAsset(asset._id)}
                         />
-                    )) : 
-                    <div>Loading...</div>}
+                    ))
+                )}
             </div>
-            {/* Asset Form */}
-            <div>
+
+            {/* Asset Form Modal */}
+            <PopupModal
+                formIsOpen={formIsOpen}
+                setFormIsOpen={setFormIsOpen}
+            >
                 <AssetForm
-                    sections={cvsections?cvsections : ""}
+                    sections={cvSections || []}
+                    formIsOpen={formIsOpen}
+                    setFormIsOpen={setFormIsOpen}
                 />
-            </div>
+            </PopupModal>
+
+            {/* Asset Display Modal */}
+            <PopupModal
+                formIsOpen={displayAsset}
+                setFormIsOpen={setDisplayAsset}
+            >
+                { selectedAssetId ?
+                    <AssetDisplay
+                        _id={selectedAssetId}
+                        setFormIsOpen={setDisplayAsset}
+                    /> : 
+                    <p>No asset selected.</p>
+                }
+            </PopupModal>
         </div>
     )
 }

@@ -3,18 +3,21 @@ import {
     createCvAsset,
     deleteCvAsset,
     fetchCvAssets,
+    fetchCvAsset,
     searchCvAssets,
     updateCvAsset } from "../controllers/cvAssetController.js";
 
 const router = Router()
 
-// Create CV Block
+// Create a CV Asset
 router.post("/", createCvAsset)
-// Fetch CV Block
+// Fetch All CV Assets
 router.get("/", fetchCvAssets)
-// Update CV Block
+// Fetch a CV Asset
+router.get("/:cvAssetId", fetchCvAsset)
+// Update a CV Asset
 router.patch("/:cvAssetId", updateCvAsset)
-// Delete CV Block
+// Delete a CV Asset
 router.delete("/:cvAssetId", deleteCvAsset)
 // Search CV Assets
 router.get("/search", searchCvAssets)

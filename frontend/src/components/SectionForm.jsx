@@ -58,7 +58,7 @@ const SectionForm = ({
                         text="Submit"
                         style="dark"
                         onClick={isEditSection ? handleUpdate : handleSubmit}
-                        disabled={isPending}
+                        disabled={!sectionName}
                         isLoading={isPending}
                     />
                     <Button

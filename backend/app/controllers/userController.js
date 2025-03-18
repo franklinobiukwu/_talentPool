@@ -74,7 +74,8 @@ const loginUser = async (req, res) => {
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            //sameSite: "Strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
 
         const firstName = user.firstName
@@ -97,6 +98,7 @@ const getNewAccessToken = async (req, res) => {
         // Verify Refresh Token
         const decode = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
         console.log("decoded jwt")
+        console.log({decode})
 
         // Find user in DB
         const user = await User.findById(decode._id)
