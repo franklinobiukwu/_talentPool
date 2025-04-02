@@ -6,7 +6,8 @@ import SubmitButton from "./SubmitButton.jsx";
 const ConfirmAlert = ({ text, onConfirm, onCancel, isPending }) => {
     const [isOpen, setIsOpen] = useState(true);
 
-    const handleClose = () => {
+    const handleClose = (event) => {
+        event.stopPropagation()
         setIsOpen(false);
         if (onCancel) onCancel();
     };

@@ -3,7 +3,6 @@ import axios from "axios"
 // Return User Token From Local Storage
 const getAccessToken = () => {
     const user = JSON.parse(localStorage.getItem("user"))
-    console.log({user})
     return user?.accessToken || null
 }
 

@@ -10,7 +10,8 @@ const AssetCard = ({ assetTags, assetSection, assetId, deleteAssetMutation, onCl
     const capitalizeWords = useCapitalizeWords();
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const handleDelete = () => {
+    const handleDelete = (event) => {
+        event.stopPropagation()
         setShowConfirm(true);
     };
 
@@ -59,7 +60,10 @@ const AssetCard = ({ assetTags, assetSection, assetId, deleteAssetMutation, onCl
             {showConfirm && (
                 <ConfirmAlert 
                     text="Do you really want to delete this asset?" 
-                    onConfirm={() => deleteAssetMutation.mutate(assetId)} 
+                    onConfirm={(event) => {
+                        event.stopPropagation()
+                        deleteAssetMutation.mutate(assetId)
+                    }} 
                     onCancel={() => setShowConfirm(false)} 
                     isPending={deleteAssetMutation.isPending}
                 />

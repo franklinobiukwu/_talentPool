@@ -107,7 +107,6 @@ const AssetsPage = () => {
     // Handle asset display in modal
     const handleDisplayAsset = (_id) => {
         setSelectedAssetId(_id)
-        console.log({selectedAssetId})
         setDisplayAsset(true)
     }
 
@@ -160,11 +159,13 @@ const AssetsPage = () => {
             <PopupModal
                 formIsOpen={displayAsset}
                 setFormIsOpen={setDisplayAsset}
+                closeBtn={"none"}
             >
                 { selectedAssetId ?
                     <AssetDisplay
                         _id={selectedAssetId}
-                        setFormIsOpen={setDisplayAsset}
+                        setDisplayAsset={setDisplayAsset}
+                        deleteAssetMutation={deleteAssetMutation}
                     /> : 
                     <p>No asset selected.</p>
                 }
