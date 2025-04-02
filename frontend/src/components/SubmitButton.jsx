@@ -4,7 +4,8 @@ const SubmitButton = (props) => {
     
     const transparent = `px-4 py-1.5 border border-blue-primary 
                             rounded text-blue-primary
-                            font-inter flex items-center ${props.className}`;
+                            font-inter flex items-center ${props.className} 
+                            ${props.disabled && "bg-gray-300 border-none text-gray-600"}`;
 
     const solid = `px-4 py-1 bg-blue-primary text-offWhite
                         rounded border border-blue-primary

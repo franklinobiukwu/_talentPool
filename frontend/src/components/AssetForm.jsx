@@ -5,8 +5,13 @@ import SubmitButton from "./SubmitButton.jsx";
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const AssetForm = ({ asset = null, onSuccess, sections, setFormIsOpen }) => {
-    const [formData, setFormData] = useState({ section: "", content: "", tags: "" });
+const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData }) => {
+    const [formData, setFormData] = useState({ 
+        section: "", 
+        content: "", 
+        tags: "" });
+
+    console.log({asset})
     const [error, setError] = useState("");
 
     // Get Query Client Instance
@@ -16,7 +21,7 @@ const AssetForm = ({ asset = null, onSuccess, sections, setFormIsOpen }) => {
     
     useEffect(() => {
         if (asset) {
-            setFormData({ section: asset.section, content: asset.content, tags: asset.tags.join(", ") });
+            setFormData({ section: asset.section, content: asset.content, tags: asset.tags });
         }
     }, [asset]);
 
@@ -101,6 +106,7 @@ const AssetForm = ({ asset = null, onSuccess, sections, setFormIsOpen }) => {
                     className="mr-2"
                     icon={<IoCloseCircleOutline/>}
                     onClick={() => setFormIsOpen(false)}
+                    disabled={mutation.isPending}
                 />
                 <SubmitButton
                     text={asset ? "Update" : "Create"}

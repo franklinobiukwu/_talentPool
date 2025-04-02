@@ -57,8 +57,18 @@ const deleteAsset = async (_id) => {
 }
 
 // Function to Edit Asset
-const updateAsset = () => {
+const updateAsset = async (_id) => {
+    const accessToken = getAccessToken()
+    if (!accessToken) throw new Error("No token found")
 
+    const response = await api.patch(`/user/cvassets/${_id}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    })
+
+    console.log({response})
+    return response?.data
 }
 
 
@@ -67,6 +77,10 @@ const AssetsPage = () => {
     const [formIsOpen, setFormIsOpen] = useState(false)
     const [displayAsset, setDisplayAsset] = useState(false)
     const [selectedAssetId, setSelectedAssetId] = useState(null)
+
+    const [assetFormData, setAssetFormData] = useState({
+        section: "", content: "", tags: ""
+    })
 
     const queryClient = useQueryClient()
 
@@ -96,6 +110,15 @@ const AssetsPage = () => {
                     asset._id !== deletedAsset._id
                 ))
             ))
+            setDisplayAsset(false)
+        }
+    })
+
+    // Mutation to Update Asset
+    const updateAssetMutation = useMutation({
+        mutationFn: updateAsset,
+        onSuccess: (updatedAsset) => {
+            queryClient.setQueryData(["cvassets"], (oldData) => ([...oldData, updatedAsset]))
         }
     })
 
@@ -147,11 +170,13 @@ const AssetsPage = () => {
             <PopupModal
                 formIsOpen={formIsOpen}
                 setFormIsOpen={setFormIsOpen}
+                className='z-10'
             >
                 <AssetForm
                     sections={cvSections || []}
                     formIsOpen={formIsOpen}
                     setFormIsOpen={setFormIsOpen}
+                    asset={assetFormData}
                 />
             </PopupModal>
 
@@ -166,6 +191,8 @@ const AssetsPage = () => {
                         _id={selectedAssetId}
                         setDisplayAsset={setDisplayAsset}
                         deleteAssetMutation={deleteAssetMutation}
+                        setFormIsOpen={setFormIsOpen}
+                        setAssetFormData={setAssetFormData}
                     /> : 
                     <p>No asset selected.</p>
                 }

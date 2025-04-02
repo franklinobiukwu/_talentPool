@@ -5,6 +5,7 @@ import { GoKebabHorizontal } from "react-icons/go";
 import { IoPencil, IoTrash } from "react-icons/io5";
 import { useEffect, useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
+import { ThreeDots } from "react-loader-spinner";
 
 const fetchAsset = async (_id) => {
     const accessToken = getAccessToken()
@@ -17,10 +18,11 @@ const fetchAsset = async (_id) => {
     return response?.data;
 };
 
-const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation }) => {
+const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation, setFormIsOpen, setAssetFormData }) => {
     const [showMenu, setShowMenu] = useState(false);
     const assetRef = useRef(null)
     const menuRef = useRef(null)
+    const hamburgerRef = useRef(null)
 
     const { data, isPending, isError, error } = useQuery({
         queryKey: ["assets", _id],
@@ -32,14 +34,23 @@ const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation }) => {
         const handleClickOutside = (event) => {
             if (assetRef.current && !assetRef.current.contains(event.target)){
                 setDisplayAsset(false)
+                setShowMenu(false)
+            }
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                // Skip if event.target is button
+                if (hamburgerRef.current.contains(event.target)) return
+
+                setShowMenu(false)
             }
         }
+
 
         document.addEventListener("mousedown", handleClickOutside)
         return () => {
             document.removeEventListener("mousedown", handleClickOutside)
         }
     }, [setDisplayAsset])
+
 
     if (isError) return <p className="text-center text-red-500">Error: {error.message}</p>;
 
@@ -55,12 +66,12 @@ const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation }) => {
                 <img src={BlockImg} alt="Asset" className="w-full h-52 object-cover" />
                 
                 {/* Menu Button */}
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-3 right-3" ref={hamburgerRef}>
                     <button
                         onClick={() => setShowMenu(!showMenu)}
-                        onBlur={() => setShowMenu(false)}
                         className="p-2 bg-gray-100 hover:bg-gray-200
                                     rounded-full transition-all"
+                        ref={menuRef}
                     >
                         <GoKebabHorizontal className="text-gray-600 text-lg" />
                     </button>
@@ -68,19 +79,41 @@ const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation }) => {
 
                 {/* Dropdown Menu */}
                 {showMenu && (
-                    <div className="absolute top-12 right-3 bg-white shadow-md rounded-lg border w-32 py-2">
-                        <button className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 w-full">
+                    <div
+                        ref={menuRef}
+                        className="absolute top-12 right-3 bg-white shadow-md rounded-lg border w-32 py-2"
+                    >
+                        <button 
+                            className="flex items-center gap-2 px-4 py-2
+                                        text-gray-700 hover:bg-gray-100 w-full"
+                            onClick={() => {
+                                setAssetFormData(data)
+                                setFormIsOpen(true)
+                            }}
+                        >
                             <IoPencil className="text-blue-500" />
                             Edit
                         </button>
                         <button 
-                            className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-100 w-full"
-                            onClick={() => {
-                                console.log("Asset ID:", data._id)
+                            className={`flex items-center gap-2 px-4 py-2 text-red-600 
+                                        hover:bg-red-100 w-full
+                                        ${deleteAssetMutation.isPending && 
+                                                "bg-gray-300 hover:bg-gray-300 text-gray-600"}`}
+                            onClick={(event) => {
+                                event.stopPropagation()
                                 deleteAssetMutation.mutate(data._id)
                             }}
+                            disabled={deleteAssetMutation.isPending}
                         >
-                            <IoTrash className="text-red-500" />
+                            {deleteAssetMutation.isPending? 
+                                <ThreeDots
+                                    visible={true}
+                                    color="#fafafa"
+                                    height={"25"}
+                                    width={"25"}
+                                    redius={"110"}
+                                    ariaLabel="three-dots"
+                                /> : <IoTrash className="text-red-500" />}
                             Delete
                         </button>
                     </div>
