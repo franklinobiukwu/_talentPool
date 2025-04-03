@@ -18,7 +18,10 @@ const fetchAsset = async (_id) => {
     return response?.data;
 };
 
-const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation, setFormIsOpen, setAssetFormData }) => {
+const AssetDisplay = ({ 
+                        _id, setDisplayAsset, deleteAssetMutation, setFormIsOpen,
+                        setAssetFormData, formIsOpen 
+                    }) => {
     const [showMenu, setShowMenu] = useState(false);
     const assetRef = useRef(null)
     const menuRef = useRef(null)
@@ -32,10 +35,11 @@ const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation, setFormIsOpen
     // Close AssetDisplay when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (assetRef.current && !assetRef.current.contains(event.target)){
+            if (assetRef.current && !assetRef.current.contains(event.target) && !formIsOpen){
                 setDisplayAsset(false)
                 setShowMenu(false)
             }
+            console.log({formIsOpen})
             if (menuRef.current && !menuRef.current.contains(event.target)) {
                 // Skip if event.target is button
                 if (hamburgerRef.current.contains(event.target)) return
@@ -49,7 +53,7 @@ const AssetDisplay = ({ _id, setDisplayAsset, deleteAssetMutation, setFormIsOpen
         return () => {
             document.removeEventListener("mousedown", handleClickOutside)
         }
-    }, [setDisplayAsset])
+    }, [setDisplayAsset, formIsOpen])
 
 
     if (isError) return <p className="text-center text-red-500">Error: {error.message}</p>;

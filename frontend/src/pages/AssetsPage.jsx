@@ -5,7 +5,7 @@ import { api, getAccessToken } from "../hooks/utilityFns.jsx";
 import PopupModal from "../components/PopupModal.jsx";
 import ToolBar from "../components/ToolBar.jsx"
 import SearchBar from "../components/SearchBar.jsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 import AssetDisplay from "../components/AssetDisplay.jsx"
@@ -14,31 +14,41 @@ import AssetDisplay from "../components/AssetDisplay.jsx"
 // Function to fetch assets
 const fetchAssets = async () => {
     
-    const accessToken = getAccessToken()
+    try{
+        const accessToken = getAccessToken()
 
-    if (!accessToken) throw new Error("No access token found")
+        if (!accessToken) throw new Error("No access token found")
 
-    const response = await api.get("/user/cvassets", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
+        const response = await api.get("/user/cvassets", {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
 
-    return response?.data
+        return response?.data || []
+    } catch (error){
+        console.error("Error fetching assets:", error)
+        throw error
+    }
 }
 
 // Function to fetch Sections
 const fetchSections = async () => {
-    const accessToken = getAccessToken()
-    if (!accessToken) throw new Error("No access token found")
+    try{
+        const accessToken = getAccessToken()
+        if (!accessToken) throw new Error("No access token found")
 
-    const response = await api.get("/user/cvsections", {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
+        const response = await api.get("/user/cvsections", {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
 
-    return response?.data
+        return response?.data || []
+    }catch(error){
+        console.error("Error fetching sections:", error)
+        throw error
+    }
 }
 
 // Function to delete asset
@@ -56,18 +66,17 @@ const deleteAsset = async (_id) => {
     return response?.data
 }
 
-// Function to Edit Asset
-const updateAsset = async (_id) => {
+// Function to Update Asset
+const updateAsset = async ({assetId, payload}) => {
     const accessToken = getAccessToken()
     if (!accessToken) throw new Error("No token found")
 
-    const response = await api.patch(`/user/cvassets/${_id}`, {
+    const response = await api.patch(`/user/cvassets/${assetId}`, payload, {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }
     })
 
-    console.log({response})
     return response?.data
 }
 
@@ -81,6 +90,8 @@ const AssetsPage = () => {
     const [assetFormData, setAssetFormData] = useState({
         section: "", content: "", tags: ""
     })
+
+    const assetFormRef = useRef()
 
     const queryClient = useQueryClient()
 
@@ -118,7 +129,14 @@ const AssetsPage = () => {
     const updateAssetMutation = useMutation({
         mutationFn: updateAsset,
         onSuccess: (updatedAsset) => {
-            queryClient.setQueryData(["cvassets"], (oldData) => ([...oldData, updatedAsset]))
+            queryClient.invalidateQueries(["assets", `${updatedAsset._id}`])
+            queryClient.setQueryData(["cvassets"], (oldData) => 
+                oldData?.map((asset) => (asset._id === updatedAsset._id ? updatedAsset : asset))
+            )
+            console.log("We just had a successful update")
+
+            setAssetFormData({section: "", content: "", tags: ""})
+            setFormIsOpen(false)
         }
     })
 
@@ -146,9 +164,10 @@ const AssetsPage = () => {
             {/* Assets Card List */}
             <div className="flex gap-4 flex-wrap justify-center">
                 { isPending ? (
-                    <div className="text-center">
-                        <p className="text-gray-500">Loading assets...</p>
-                        <Skeleton count={5} height={100} />
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {[...Array(6)].map((_, index) => (
+                            <Skeleton key={index} width={120} height={120} />
+                        ))}
                     </div>
                 ) : isError ? (
                     <p className="text-red-500 text-center">Error: {error.message}</p>
@@ -173,10 +192,12 @@ const AssetsPage = () => {
                 className='z-10'
             >
                 <AssetForm
-                    sections={cvSections || []}
+                    sections={sectionIsPending ? [] : cvSections || []}
                     formIsOpen={formIsOpen}
                     setFormIsOpen={setFormIsOpen}
                     asset={assetFormData}
+                    updateAssetMutation={updateAssetMutation}
+                    ref={assetFormRef}
                 />
             </PopupModal>
 
@@ -193,6 +214,8 @@ const AssetsPage = () => {
                         deleteAssetMutation={deleteAssetMutation}
                         setFormIsOpen={setFormIsOpen}
                         setAssetFormData={setAssetFormData}
+                        assetFormRef={assetFormRef}
+                        formIsOpen={formIsOpen}
                     /> : 
                     <p>No asset selected.</p>
                 }

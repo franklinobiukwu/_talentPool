@@ -5,13 +5,15 @@ import SubmitButton from "./SubmitButton.jsx";
 import { IoCloseCircleOutline, IoSave } from "react-icons/io5"
 
 
-const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData }) => {
+const AssetForm = ({ 
+        asset, onSuccess, sections, setFormIsOpen, assetFormData,
+        updateAssetMutation, ref
+}) => {
     const [formData, setFormData] = useState({ 
         section: "", 
         content: "", 
         tags: "" });
 
-    console.log({asset})
     const [error, setError] = useState("");
 
     // Get Query Client Instance
@@ -21,7 +23,11 @@ const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData })
     
     useEffect(() => {
         if (asset) {
-            setFormData({ section: asset.section, content: asset.content, tags: asset.tags });
+            setFormData({
+                section: asset.section, 
+                content: asset.content, 
+                tags: Array.isArray(asset.tags) ? asset.tags.join(", ") : asset.tags || ""
+            });
         }
     }, [asset]);
 
@@ -35,6 +41,7 @@ const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData })
         setFormData(prev => ({ ...prev, tags: e.target.value }));
     };
 
+    // Create Asset
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("")
@@ -51,6 +58,18 @@ const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData })
         mutation.mutate(payload);
     };
 
+    // Update Asset
+    const updateAssetData = (e) => {
+        e.preventDefault()
+        const payload = { 
+            section: formData.section, 
+            content: formData.content, 
+            tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag)
+        };
+        const assetId = asset._id
+        updateAssetMutation.mutate({assetId, payload})
+    }
+
     const mutation = useMutation({
         mutationFn: async (data) => {
             const url = asset ? `/user/cvassets/${asset._id}` : "/user/cvassets";
@@ -64,7 +83,7 @@ const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData })
         onSuccess: (newData) => {
             queryClient.setQueryData(["cvassets"], (oldData) => {
                 if (!oldData) return [newData]
-                return [...oldData, newData]
+                return oldData.map((asset) => asset._id === newData._id ? newData : asset)
             })
 
             setFormData({content: "", section: "", tags: ""})
@@ -74,11 +93,13 @@ const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData })
         onError: (err) => setError(err.response?.data?.error || "Operation failed")
     });
 
+
     return (
         <form 
             onSubmit={handleSubmit}
             className="rounded-lg bg-white shadow-lg
                         p-6 border border-gray-200 w-1/2 max-w-96"
+            ref={ref}
         >
             <h3 className="text-lg font-bold mb-4">{asset ? "Edit Asset" : "Create Asset"}</h3>
             {error && <p className="text-red-500 mb-2">{error}</p>}
@@ -109,10 +130,11 @@ const AssetForm = ({ asset, onSuccess, sections, setFormIsOpen, assetFormData })
                     disabled={mutation.isPending}
                 />
                 <SubmitButton
+                    type="submit"
                     text={asset ? "Update" : "Create"}
                     style="solid"
-                    onClick={handleSubmit}
-                    isLoading={mutation.isPending}
+                    onClick={asset ? updateAssetData : handleSubmit}
+                    isLoading={mutation.isPending || updateAssetMutation.isPending}
                     disabled={!formData.section || !formData.content || !formData.tags}
                 />
             </div>
